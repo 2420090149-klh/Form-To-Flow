@@ -50,7 +50,7 @@ export default function TemplatesPage({ params }: { params: Promise<{ id: string
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label>Template Style</Label>
-              <Select value={template} onValueChange={setTemplate}>
+              <Select value={template} onValueChange={(val) => val && setTemplate(val)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select template" />
                 </SelectTrigger>

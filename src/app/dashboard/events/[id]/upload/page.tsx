@@ -115,7 +115,7 @@ export default function UploadPage({ params }: { params: Promise<{ id: string }>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label>Name Column *</Label>
-                <Select onValueChange={(val) => setMapping(prev => ({...prev, name: val}))}>
+                <Select onValueChange={(val: string | null) => setMapping(prev => ({...prev, name: val || ""}))}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select column" />
                   </SelectTrigger>
@@ -126,7 +126,7 @@ export default function UploadPage({ params }: { params: Promise<{ id: string }>
               </div>
               <div className="space-y-2">
                 <Label>Email Column *</Label>
-                <Select onValueChange={(val) => setMapping(prev => ({...prev, email: val}))}>
+                <Select onValueChange={(val: string | null) => setMapping(prev => ({...prev, email: val || ""}))}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select column" />
                   </SelectTrigger>
@@ -137,7 +137,7 @@ export default function UploadPage({ params }: { params: Promise<{ id: string }>
               </div>
               <div className="space-y-2">
                 <Label>Phone Column (Optional)</Label>
-                <Select onValueChange={(val) => setMapping(prev => ({...prev, phone: val}))}>
+                <Select onValueChange={(val: string | null) => setMapping(prev => ({...prev, phone: val || ""}))}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select column" />
                   </SelectTrigger>
