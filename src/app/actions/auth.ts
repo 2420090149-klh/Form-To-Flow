@@ -15,7 +15,7 @@ export async function registerUser(formData: FormData) {
   const password = formData.get("password") as string
 
   if (!email || !password || !name) {
-    throw new Error("Missing fields")
+    return { error: "Missing fields" }
   }
 
   const existingUser = await prisma.user.findUnique({
@@ -23,7 +23,7 @@ export async function registerUser(formData: FormData) {
   })
 
   if (existingUser) {
-    throw new Error("User already exists")
+    return { error: "User already exists" }
   }
 
   const hashedPassword = await bcrypt.hash(password, 10)
