@@ -14,6 +14,7 @@ export default function DispatchPage({ params }: { params: Promise<{ id: string 
   const [attendees, setAttendees] = useState<any[]>([])
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [dispatching, setDispatching] = useState(false)
+  const [groupLink, setGroupLink] = useState("")
   
   const fetchStats = () => {
     fetch(`/api/events/${unwrappedParams.id}/stats`)
@@ -50,7 +51,7 @@ export default function DispatchPage({ params }: { params: Promise<{ id: string 
       const res = await fetch(`/api/events/${unwrappedParams.id}/dispatch`, { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ attendeeIds: Array.from(selectedIds) })
+        body: JSON.stringify({ attendeeIds: Array.from(selectedIds), groupLink: groupLink.trim() || undefined })
       })
       
       if (res.ok) {
@@ -144,6 +145,23 @@ export default function DispatchPage({ params }: { params: Promise<{ id: string 
                 )}
               </TableBody>
             </Table>
+          </div>
+
+          <div className="space-y-4 mb-6">
+            <div className="space-y-2">
+              <label htmlFor="groupLink" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Optional Group Link
+              </label>
+              <input 
+                id="groupLink"
+                type="url"
+                placeholder="https://chat.whatsapp.com/..." 
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                value={groupLink}
+                onChange={(e) => setGroupLink(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">Add a WhatsApp, Discord, or Telegram group link to include in the pass emails.</p>
+            </div>
           </div>
 
           <Button 

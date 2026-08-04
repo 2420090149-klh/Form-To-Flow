@@ -34,7 +34,7 @@ export async function POST(
     if (!event) return new Response("Forbidden", { status: 403 })
 
     const body = await req.json().catch(() => ({}))
-    const { attendeeIds } = body
+    const { attendeeIds, groupLink } = body
 
     const whereClause: any = { eventId }
     if (Array.isArray(attendeeIds) && attendeeIds.length > 0) {
@@ -54,33 +54,47 @@ export async function POST(
         // Generate QR code URL (using an external service so it loads in email clients)
         const qrCodeUrl = `https://quickchart.io/qr?text=${encodeURIComponent(attendee.ticketCode)}&size=300`
         
+        let htmlContent = `
+          <div style="font-family: sans-serif; max-w: 600px; margin: 0 auto; text-align: center; border: 1px solid #eee; padding: 40px; border-radius: 12px; background: #fafafa;">
+            <h1 style="color: #333; margin-bottom: 5px;">${event.title}</h1>
+            <p style="color: #666; margin-top: 0;">${event.date ? new Date(event.date).toLocaleDateString() : ''} - ${event.location || ''}</p>
+            <hr style="border: 0; border-top: 1px solid #ddd; margin: 30px 0;">
+            
+            <h2 style="color: #333; font-size: 24px;">Hi ${attendee.name},</h2>
+            <p style="color: #555; font-size: 16px;">Here is your official event pass. Please present the QR code below at the check-in desk.</p>
+            
+            <div style="background: white; display: inline-block; padding: 20px; border-radius: 12px; margin: 20px 0; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+              <img src="${qrCodeUrl}" alt="Ticket QR Code" width="200" height="200" style="display: block; margin: 0 auto; border: none; outline: none;"/>
+            </div>
+            
+            <p style="font-family: monospace; font-size: 18px; letter-spacing: 2px; color: #333; background: #eee; display: inline-block; padding: 8px 16px; border-radius: 6px;">
+              ${attendee.ticketCode}
+            </p>
+        `
+
+        if (groupLink) {
+          htmlContent += `
+            <div style="margin-top: 30px; padding: 20px; background: #eef2ff; border-radius: 8px; border: 1px solid #c7d2fe;">
+              <h3 style="color: #4338ca; margin-top: 0; margin-bottom: 10px;">Join the Community!</h3>
+              <p style="color: #4f46e5; font-size: 14px; margin-bottom: 15px;">In case you missed it during registration, join our official group to stay updated.</p>
+              <a href="${groupLink}" style="background: #4f46e5; color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; display: inline-block;">Join Group</a>
+            </div>
+          `
+        }
+
+        htmlContent += `
+            <p style="color: #888; font-size: 12px; margin-top: 40px;">
+              Powered by Form-To-Flow
+            </p>
+          </div>
+        `
+        
         try {
           await transporter.sendMail({
             from: `"Event Team" <${fromEmail}>`,
             to: attendee.email,
             subject: `Your Pass for ${event.title}`,
-            html: `
-              <div style="font-family: sans-serif; max-w: 600px; margin: 0 auto; text-align: center; border: 1px solid #eee; padding: 40px; border-radius: 12px; background: #fafafa;">
-                <h1 style="color: #333; margin-bottom: 5px;">${event.title}</h1>
-                <p style="color: #666; margin-top: 0;">${event.date ? new Date(event.date).toLocaleDateString() : ''} - ${event.location || ''}</p>
-                <hr style="border: 0; border-top: 1px solid #ddd; margin: 30px 0;">
-                
-                <h2 style="color: #333; font-size: 24px;">Hi ${attendee.name},</h2>
-                <p style="color: #555; font-size: 16px;">Here is your official event pass. Please present the QR code below at the check-in desk.</p>
-                
-                <div style="background: white; display: inline-block; padding: 20px; border-radius: 12px; margin: 20px 0; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                  <img src="${qrCodeUrl}" alt="Ticket QR Code" width="200" height="200" style="display: block; margin: 0 auto; border: none; outline: none;"/>
-                </div>
-                
-                <p style="font-family: monospace; font-size: 18px; letter-spacing: 2px; color: #333; background: #eee; display: inline-block; padding: 8px 16px; border-radius: 6px;">
-                  ${attendee.ticketCode}
-                </p>
-                
-                <p style="color: #888; font-size: 12px; margin-top: 40px;">
-                  Powered by Form-To-Flow
-                </p>
-              </div>
-            `
+            html: htmlContent
           })
           
           console.log(`[EMAIL SENT] Pass sent to ${attendee.email}`)
