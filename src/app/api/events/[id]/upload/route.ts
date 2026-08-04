@@ -45,6 +45,8 @@ export async function POST(
         email: att.email,
         phone: att.phone,
         customData: att.customData,
+        teamName: att.teamName,
+        isTeamLeader: Boolean(att.isTeamLeader),
         ticketCode
       }
     })

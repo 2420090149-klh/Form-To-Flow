@@ -7,22 +7,29 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Upload } from "lucide-react"
+import { Upload, CheckCircle2 } from "lucide-react"
+
+interface ExtractedAttendee {
+  name: string
+  email: string
+  phone: string | null
+  teamName: string | null
+  isTeamLeader: boolean
+  customData: string
+}
 
 export default function UploadPage({ params }: { params: Promise<{ id: string }> }) {
   const unwrappedParams = use(params)
-  const [data, setData] = useState<any[]>([])
-  const [columns, setColumns] = useState<string[]>([])
-  const [mapping, setMapping] = useState<{name: string, email: string, phone: string}>({
-    name: "", email: "", phone: ""
-  })
+  const [extractedAttendees, setExtractedAttendees] = useState<ExtractedAttendee[]>([])
+  const [rawRowCount, setRawRowCount] = useState(0)
   const [uploading, setUploading] = useState(false)
+  const [fileProcessed, setFileProcessed] = useState(false)
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
+    setFileProcessed(false)
     const reader = new FileReader()
     reader.onload = (evt) => {
       const bstr = evt.target?.result
@@ -31,49 +38,107 @@ export default function UploadPage({ params }: { params: Promise<{ id: string }>
       const ws = wb.Sheets[wsname]
       const jsonData = utils.sheet_to_json(ws, { header: 1, defval: "" })
       
-      if (jsonData.length > 0) {
-        setColumns((jsonData[0] as string[]).map(c => String(c).trim()).filter(Boolean))
+      if (jsonData.length > 1) {
+        const headers = (jsonData[0] as string[]).map(c => String(c).trim())
         const rows = utils.sheet_to_json(ws, { defval: "" })
+        setRawRowCount(rows.length)
         
-        // Normalize row keys by trimming them
-        const normalizedRows = rows.map((r: any) => {
-          const newRow: any = {}
-          for (const key in r) {
-            newRow[key.trim()] = r[key]
+        // --- 1. Fuzzy Header Matching ---
+        let nameCol = ""
+        let emailCol = ""
+        let phoneCol = ""
+        let teamCol = ""
+        const memberCols: string[] = []
+
+        headers.forEach(h => {
+          const lowerH = h.toLowerCase()
+          if (!nameCol && /name|full name|leader|participant/i.test(lowerH) && !/team|group/i.test(lowerH) && !lowerH.includes("member")) nameCol = h
+          if (!emailCol && /email|mail|e-mail/i.test(lowerH) && !lowerH.includes("member")) emailCol = h
+          if (!phoneCol && /phone|mobile|contact/i.test(lowerH) && !lowerH.includes("member")) phoneCol = h
+          if (!teamCol && /team|group|organization/i.test(lowerH)) teamCol = h
+          if (/member|teammate|partner|participant/i.test(lowerH) && h !== nameCol && h !== emailCol) {
+            memberCols.push(h)
           }
-          return newRow
         })
-        setData(normalizedRows)
+
+        // --- 2. Extract and Flatten ---
+        const allAttendees: ExtractedAttendee[] = []
+
+        rows.forEach((r: any) => {
+          const rowData = r as Record<string, any>
+          const teamName = teamCol ? String(rowData[teamCol] || "").trim() : null
+          
+          // Leader
+          const leaderName = nameCol ? String(rowData[nameCol] || "").trim() : ""
+          const leaderEmail = emailCol ? String(rowData[emailCol] || "").trim() : ""
+          const leaderPhone = phoneCol ? String(rowData[phoneCol] || "").trim() : null
+          
+          if (leaderEmail) { // Minimal requirement to send a pass is an email
+            allAttendees.push({
+              name: leaderName || "Attendee",
+              email: leaderEmail,
+              phone: leaderPhone,
+              teamName,
+              isTeamLeader: true,
+              customData: JSON.stringify(rowData)
+            })
+          }
+
+          // Scan all other cells (or just member cols + unmatched cols) for combined member data
+          const colsToScan = memberCols.length > 0 ? memberCols : headers.filter(h => h !== nameCol && h !== emailCol && h !== phoneCol && h !== teamCol)
+          
+          colsToScan.forEach(col => {
+            const cellValue = String(rowData[col] || "").trim()
+            if (!cellValue) return
+
+            // Regex extraction
+            const emailMatch = cellValue.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)
+            if (emailMatch) {
+              const email = emailMatch[0]
+              
+              // Phone regex (simple generic)
+              const phoneMatch = cellValue.match(/\+?\d[\d\s-]{8,12}\d/)
+              const phone = phoneMatch ? phoneMatch[0] : null
+              
+              // Name is whatever is left over after stripping email and phone
+              let name = cellValue.replace(email, "")
+              if (phone) name = name.replace(phone, "")
+              name = name.replace(/[\(\)\[\]]/g, "").trim()
+              // Remove extra weird characters like trailing hyphens
+              name = name.replace(/^[-:\s]+|[-:\s]+$/g, '').trim()
+              
+              if (!name) name = "Team Member"
+
+              allAttendees.push({
+                name,
+                email,
+                phone,
+                teamName,
+                isTeamLeader: false,
+                customData: JSON.stringify(rowData)
+              })
+            }
+          })
+        })
+
+        // Filter valid ones
+        const validAttendees = allAttendees.filter(a => a.email && a.email.includes("@"))
+        setExtractedAttendees(validAttendees)
+        setFileProcessed(true)
       }
     }
     reader.readAsBinaryString(file)
   }
 
   const handleSubmit = async () => {
-    if (!mapping.name || !mapping.email) {
-      alert("Name and Email are required mappings")
-      return
-    }
+    if (extractedAttendees.length === 0) return
 
     setUploading(true)
     try {
-      const mappedData = data.map(row => ({
-        name: String(row[mapping.name] || "").trim(),
-        email: String(row[mapping.email] || "").trim(),
-        phone: mapping.phone ? String(row[mapping.phone] || "").trim() : null,
-        customData: JSON.stringify(row)
-      })).filter(row => row.name && row.email) // filter empty rows
-
-      if (mappedData.length === 0) {
-        alert("No valid rows found after mapping. Make sure rows have both name and email.")
-        setUploading(false)
-        return
-      }
-
       const res = await fetch(`/api/events/${unwrappedParams.id}/upload`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ attendees: mappedData })
+        body: JSON.stringify({ attendees: extractedAttendees })
       })
 
       if (res.ok) {
@@ -94,8 +159,8 @@ export default function UploadPage({ params }: { params: Promise<{ id: string }>
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Upload Attendees</CardTitle>
-          <CardDescription>Upload an Excel or CSV file to add attendees</CardDescription>
+          <CardTitle>Universal Auto-Detect Upload</CardTitle>
+          <CardDescription>Upload any Excel or CSV file. We will automatically find names, emails, and extract merged team members into individual tickets.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -105,73 +170,67 @@ export default function UploadPage({ params }: { params: Promise<{ id: string }>
         </CardContent>
       </Card>
 
-      {data.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Map Columns</CardTitle>
-            <CardDescription>Map your file columns to the standard fields</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label>Name Column *</Label>
-                <Select onValueChange={(val: string | null) => setMapping(prev => ({...prev, name: val || ""}))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select column" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {columns.map(col => <SelectItem key={col} value={col}>{col}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Email Column *</Label>
-                <Select onValueChange={(val: string | null) => setMapping(prev => ({...prev, email: val || ""}))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select column" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {columns.map(col => <SelectItem key={col} value={col}>{col}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Phone Column (Optional)</Label>
-                <Select onValueChange={(val: string | null) => setMapping(prev => ({...prev, phone: val || ""}))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select column" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {columns.map(col => <SelectItem key={col} value={col}>{col}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
+      {fileProcessed && (
+        <Card className="border-green-100 shadow-sm">
+          <CardHeader className="bg-green-50/50 pb-4 border-b">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="text-green-600 h-5 w-5" />
+              <CardTitle className="text-green-800 text-lg">Extraction Complete</CardTitle>
             </div>
-
-            <div className="rounded-md border">
+            <CardDescription className="text-green-700/80 mt-1">
+              We parsed <strong>{rawRowCount}</strong> rows and automatically extracted <strong>{extractedAttendees.length}</strong> individual attendees.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6 space-y-6">
+            
+            <div className="rounded-md border max-h-[400px] overflow-auto">
               <Table>
-                <TableHeader>
+                <TableHeader className="sticky top-0 bg-white">
                   <TableRow>
-                    {columns.map((col, i) => (
-                      <TableHead key={i}>{col}</TableHead>
-                    ))}
+                    <TableHead>Role</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Team</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {data.slice(0, 5).map((row, i) => (
+                  {extractedAttendees.slice(0, 100).map((att, i) => (
                     <TableRow key={i}>
-                      {columns.map((col, j) => (
-                        <TableCell key={j}>{row[col]}</TableCell>
-                      ))}
+                      <TableCell>
+                        {att.isTeamLeader ? (
+                          <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded font-medium">Leader</span>
+                        ) : (
+                          <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">Member</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="font-medium">{att.name}</TableCell>
+                      <TableCell>{att.email}</TableCell>
+                      <TableCell>{att.phone || <span className="text-gray-400 text-xs">N/A</span>}</TableCell>
+                      <TableCell>{att.teamName || <span className="text-gray-400 text-xs">None</span>}</TableCell>
                     </TableRow>
                   ))}
+                  {extractedAttendees.length > 100 && (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-4 text-gray-500 bg-gray-50 text-sm">
+                        ... and {extractedAttendees.length - 100} more attendees
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {extractedAttendees.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                        No valid attendees with emails could be found.
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </div>
             
-            <Button onClick={handleSubmit} disabled={uploading}>
+            <Button onClick={handleSubmit} disabled={uploading || extractedAttendees.length === 0} className="w-full">
               <Upload className="mr-2 h-4 w-4" />
-              {uploading ? "Uploading..." : "Save Attendees"}
+              {uploading ? "Saving Attendees..." : `Confirm & Save ${extractedAttendees.length} Attendees`}
             </Button>
           </CardContent>
         </Card>
