@@ -52,11 +52,21 @@ export default function UploadPage({ params }: { params: Promise<{ id: string }>
 
         headers.forEach(h => {
           const lowerH = h.toLowerCase()
-          if (!nameCol && /name|full name|leader|participant/i.test(lowerH) && !/team|group/i.test(lowerH) && !lowerH.includes("member")) nameCol = h
-          if (!emailCol && /email|mail|e-mail/i.test(lowerH) && !lowerH.includes("member")) emailCol = h
-          if (!phoneCol && /phone|mobile|contact/i.test(lowerH) && !lowerH.includes("member")) phoneCol = h
-          if (!teamCol && /team|group|organization/i.test(lowerH)) teamCol = h
-          if (/member|teammate|partner|participant/i.test(lowerH) && h !== nameCol && h !== emailCol) {
+          
+          // 1. Leader Name Column: Explicitly ignore college/school
+          if (!nameCol && /leader name|team leader|participant name|^name$/i.test(lowerH) && !/college|university|school|institution/i.test(lowerH)) nameCol = h
+          
+          // 2. Team Name Column: Explicitly ignore leader/member/size
+          if (!teamCol && /team name|group name|^team$/i.test(lowerH) && !/leader|member|size|type/i.test(lowerH)) teamCol = h
+          
+          // 3. Leader Email Column
+          if (!emailCol && /leader email|team leader email|^email address$|^email$/i.test(lowerH)) emailCol = h
+          
+          // 4. Leader Phone Column
+          if (!phoneCol && /mobile|phone|contact/i.test(lowerH) && !lowerH.includes("member")) phoneCol = h
+          
+          // Member Columns
+          if (/member|teammate|partner|participant/i.test(lowerH) && h !== nameCol && h !== emailCol && h !== teamCol) {
             memberCols.push(h)
           }
         })
@@ -104,8 +114,8 @@ export default function UploadPage({ params }: { params: Promise<{ id: string }>
               let name = cellValue.replace(email, "")
               if (phone) name = name.replace(phone, "")
               name = name.replace(/[\(\)\[\]]/g, "").trim()
-              // Remove extra weird characters like trailing hyphens
-              name = name.replace(/^[-:\s]+|[-:\s]+$/g, '').trim()
+              // Trim leading and trailing punctuation (commas, newlines, semicolons, extra spaces)
+              name = name.replace(/^[,\s\n\-\/;\:]+|[,\s\n\-\/;\:]+$/g, '').trim()
               
               if (!name) name = "Team Member"
 
