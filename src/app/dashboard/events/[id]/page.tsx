@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Upload, FileImage, Send, Users, QrCode, Shield } from "lucide-react"
+import { DeleteEventButton } from "./delete-button"
 
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -136,15 +137,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form action={async () => {
-              "use server"
-              const { deleteEvent } = await import("@/app/actions/event")
-              await deleteEvent(event.id)
-            }}>
-              <Button variant="destructive">
-                Delete Event
-              </Button>
-            </form>
+            <DeleteEventButton eventId={event.id} />
           </CardContent>
         </Card>
       )}
