@@ -32,7 +32,7 @@ export async function addTeamMember(formData: FormData) {
   let user = await prisma.user.findUnique({ where: { email } })
 
     const fromEmail = process.env.SMTP_FROM || process.env.SMTP_USER || "noreply@eventflow.com"
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"))
 
     // Always generate a temporary password for team invites (to make testing and logging in easy)
     const tempPassword = Math.random().toString(36).slice(-8)
