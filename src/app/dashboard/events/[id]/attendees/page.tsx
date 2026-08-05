@@ -101,6 +101,7 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
         Email: att.email || "",
         Phone: att.phone || "",
         College: college,
+        "Team Name": att.teamName || "",
         "Ticket Code": att.ticketCode,
       }
 
@@ -180,6 +181,7 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
                   <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
                   <TableHead>College</TableHead>
+                  <TableHead>Team Name</TableHead>
                   <TableHead>Ticket Code</TableHead>
                   {event && event.date && event.durationDays > 0 ? (
                     Array.from({ length: event.durationDays }).map((_, i) => {
@@ -233,6 +235,13 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
                             <span className="text-gray-400 italic text-xs">N/A</span>
                           )
                         })()}
+                      </TableCell>
+                      <TableCell>
+                        {att.teamName ? (
+                          <span className="text-xs font-medium px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full">{att.teamName}</span>
+                        ) : (
+                          <span className="text-gray-400 italic text-xs">None</span>
+                        )}
                       </TableCell>
                       <TableCell><code className="bg-gray-100 px-1 py-0.5 rounded text-xs">{att.ticketCode}</code></TableCell>
                       {event && event.date && event.durationDays > 0 ? (
