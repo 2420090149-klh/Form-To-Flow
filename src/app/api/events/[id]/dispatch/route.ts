@@ -34,7 +34,7 @@ export async function POST(
     if (!event) return new Response("Forbidden", { status: 403 })
 
     const body = await req.json().catch(() => ({}))
-    const { attendeeIds, groupLink } = body
+    const { attendeeIds, groupLink, locationLink } = body
 
     const whereClause: any = { eventId }
     if (Array.isArray(attendeeIds) && attendeeIds.length > 0) {
@@ -78,6 +78,16 @@ export async function POST(
               <h3 style="color: #4338ca; margin-top: 0; margin-bottom: 10px;">Join the Community!</h3>
               <p style="color: #4f46e5; font-size: 14px; margin-bottom: 15px;">In case you missed it during registration, join our official group to stay updated.</p>
               <a href="${groupLink}" style="background: #4f46e5; color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; display: inline-block;">Join Group</a>
+            </div>
+          `
+        }
+
+        if (locationLink) {
+          htmlContent += `
+            <div style="margin-top: 20px; padding: 20px; background: #ecfdf5; border-radius: 8px; border: 1px solid #a7f3d0;">
+              <h3 style="color: #047857; margin-top: 0; margin-bottom: 10px;">Venue Location</h3>
+              <p style="color: #059669; font-size: 14px; margin-bottom: 15px;">Click the button below to get directions to the event.</p>
+              <a href="${locationLink}" style="background: #059669; color: white; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; display: inline-block;">Open in Maps</a>
             </div>
           `
         }

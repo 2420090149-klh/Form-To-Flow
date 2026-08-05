@@ -15,6 +15,7 @@ export default function DispatchPage({ params }: { params: Promise<{ id: string 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [dispatching, setDispatching] = useState(false)
   const [groupLink, setGroupLink] = useState("")
+  const [locationLink, setLocationLink] = useState("")
   
   const fetchStats = () => {
     fetch(`/api/events/${unwrappedParams.id}/stats`)
@@ -51,7 +52,11 @@ export default function DispatchPage({ params }: { params: Promise<{ id: string 
       const res = await fetch(`/api/events/${unwrappedParams.id}/dispatch`, { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ attendeeIds: Array.from(selectedIds), groupLink: groupLink.trim() || undefined })
+        body: JSON.stringify({ 
+          attendeeIds: Array.from(selectedIds), 
+          groupLink: groupLink.trim() || undefined,
+          locationLink: locationLink.trim() || undefined
+        })
       })
       
       if (res.ok) {
@@ -147,7 +152,7 @@ export default function DispatchPage({ params }: { params: Promise<{ id: string 
             </Table>
           </div>
 
-          <div className="space-y-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="space-y-2">
               <label htmlFor="groupLink" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 Optional Group Link
@@ -156,11 +161,26 @@ export default function DispatchPage({ params }: { params: Promise<{ id: string 
                 id="groupLink"
                 type="url"
                 placeholder="https://chat.whatsapp.com/..." 
-                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 value={groupLink}
                 onChange={(e) => setGroupLink(e.target.value)}
               />
-              <p className="text-xs text-muted-foreground">Add a WhatsApp, Discord, or Telegram group link to include in the pass emails.</p>
+              <p className="text-xs text-muted-foreground">Add a WhatsApp, Discord, or Telegram group link.</p>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="locationLink" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Optional Location Map Link
+              </label>
+              <input 
+                id="locationLink"
+                type="url"
+                placeholder="https://maps.google.com/..." 
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                value={locationLink}
+                onChange={(e) => setLocationLink(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">Add a Google Maps link to the venue.</p>
             </div>
           </div>
 
