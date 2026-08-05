@@ -62,15 +62,17 @@ model VerificationToken {
 
 model Event {
   id          String       @id @default(cuid())
-  title          String
-  description    String?
-  date           DateTime?
-  location       String?
-  templateConfig String?
-  ownerId        String
-  owner       User         @relation("EventOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  title               String
+  description         String?
+  date                DateTime?
+  location            String?
+  templateConfig      String?
+  customTemplateImage String?
+  customTemplateLayout String?
+  ownerId             String
+  owner               User         @relation("EventOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
 
   teamMembers TeamMember[]
   attendees   Attendee[]

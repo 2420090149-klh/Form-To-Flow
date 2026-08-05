@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 
+export const maxDuration = 60; // Give it extra time if payload is large
+
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -27,12 +29,14 @@ export async function POST(
       return new Response("Forbidden (Only owner can change template)", { status: 403 })
     }
 
-    const { template, color, textColor } = await req.json()
+    const { template, color, textColor, customTemplateImage, customTemplateLayout } = await req.json()
 
     await prisma.event.update({
       where: { id: eventId },
       data: {
-        templateConfig: JSON.stringify({ template, color, textColor })
+        templateConfig: JSON.stringify({ template, color, textColor }),
+        customTemplateImage: customTemplateImage || null,
+        customTemplateLayout: customTemplateLayout || null
       }
     })
 
