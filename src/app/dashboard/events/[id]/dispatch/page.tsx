@@ -85,7 +85,7 @@ export default function DispatchPage({ params }: { params: Promise<{ id: string 
           <CardDescription>Send generated passes and QR codes to your attendees.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid grid-cols-2 gap-4 text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
             <div className="p-4 bg-gray-50 rounded-lg">
               <p className="text-sm text-gray-500">Total Attendees</p>
               <p className="text-3xl font-bold">{stats.total}</p>

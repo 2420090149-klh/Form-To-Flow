@@ -28,11 +28,11 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="flex gap-4">
-          <Link href="/register" className={cn(buttonVariants({ variant: "default", size: "lg" }), "text-lg px-8 h-14")}>
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4 sm:px-0">
+          <Link href="/register" className={cn(buttonVariants({ variant: "default", size: "lg" }), "text-lg px-8 h-14 w-full sm:w-auto")}>
             Create an Event
           </Link>
-          <Link href="/login" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "text-lg px-8 h-14")}>
+          <Link href="/login" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "text-lg px-8 h-14 w-full sm:w-auto")}>
             Go to Dashboard
           </Link>
         </div>

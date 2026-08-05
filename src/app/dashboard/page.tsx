@@ -35,10 +35,10 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between pb-4 border-b">
-        <h1 className="text-4xl font-extrabold tracking-tight">Your Events</h1>
-        <Link href="/dashboard/events/new">
-          <Button size="lg" className="text-lg">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b">
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Your Events</h1>
+        <Link href="/dashboard/events/new" className="w-full sm:w-auto">
+          <Button size="lg" className="w-full sm:w-auto text-lg">
             <PlusCircle className="mr-2 h-5 w-5" />
             Create Event
           </Button>

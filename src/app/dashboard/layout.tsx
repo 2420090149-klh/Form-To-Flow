@@ -14,8 +14,8 @@ export default async function DashboardLayout({
     <div className="flex min-h-screen flex-col bg-background">
       <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-8">
-            <Link href="/dashboard" className="text-3xl font-bold text-primary">
+          <div className="flex items-center gap-4 md:gap-8 min-w-0">
+            <Link href="/dashboard" className="text-xl md:text-3xl font-bold text-primary truncate">
               Form-To-Flow
             </Link>
             <nav className="hidden md:flex gap-4 mt-1">
@@ -24,8 +24,8 @@ export default async function DashboardLayout({
               </Link>
             </nav>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500">{session?.user?.email}</span>
+          <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
+            <span className="hidden sm:inline text-sm text-gray-500 truncate max-w-[150px]">{session?.user?.email}</span>
             <ThemeToggle />
             <SignOutButton />
           </div>
