@@ -13,8 +13,11 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EventFlow",
-  description: "Seamless event management and check-in system.",
+  title: 'FormToFlow - Event Passes & QR Check-in',
+  description: 'Convert form response sheets into dynamic event QR passes automatically.',
+  verification: {
+    google: 'BSA1ixnk4M8FlL6fbLWkN41DH_Gi4jNtOZQoqc1n35s',
+  },
 };
 
 import { ThemeProvider } from "@/components/theme-provider";
