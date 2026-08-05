@@ -35,7 +35,7 @@ export async function POST(
     if (!event) return new Response("Forbidden", { status: 403 })
 
     const body = await req.json().catch(() => ({}))
-    const { attendeeIds, groupLink, locationLink } = body
+    const { attendeeIds, groupLink, locationLink, note } = body
 
     const whereClause: any = { eventId }
     if (Array.isArray(attendeeIds) && attendeeIds.length > 0) {
@@ -95,9 +95,13 @@ export async function POST(
               <div style="font-family: sans-serif; max-w: 800px; margin: 0 auto; text-align: center; background: #fafafa; padding: 20px;">
                 <h1 style="color: #333; margin-bottom: 20px;">Your Pass for ${event.title}</h1>
                 <img src="cid:eventpassimage" alt="Event Pass" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
-                <p style="font-family: monospace; font-size: 18px; letter-spacing: 2px; color: #333; margin-top: 20px; background: #eee; display: inline-block; padding: 8px 16px; border-radius: 6px;">
                   ${attendee.ticketCode}
                 </p>
+                ${note ? `
+                  <div style="margin-top: 25px; padding: 15px; background: #fff; border-left: 4px solid #4f46e5; text-align: left; font-size: 15px; color: #444; white-space: pre-wrap;">
+                    ${note.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
+                  </div>
+                ` : ""}
             `
           } catch (e) {
             console.error("Failed to generate custom pass", e)
@@ -123,6 +127,12 @@ export async function POST(
               <p style="font-family: monospace; font-size: 18px; letter-spacing: 2px; color: #333; background: #eee; display: inline-block; padding: 8px 16px; border-radius: 6px;">
                 ${attendee.ticketCode}
               </p>
+              ${note ? `
+                <div style="margin-top: 25px; padding: 15px; background: #fff; border-left: 4px solid #4f46e5; text-align: left; font-size: 15px; color: #444; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); white-space: pre-wrap;">
+                  <strong>Note from Organizer:</strong><br/>
+                  ${note.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
+                </div>
+              ` : ""}
           `
         }
 

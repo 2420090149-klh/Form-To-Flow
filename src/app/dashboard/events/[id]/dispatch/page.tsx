@@ -16,6 +16,7 @@ export default function DispatchPage({ params }: { params: Promise<{ id: string 
   const [dispatching, setDispatching] = useState(false)
   const [groupLink, setGroupLink] = useState("")
   const [locationLink, setLocationLink] = useState("")
+  const [note, setNote] = useState("")
   
   const fetchStats = () => {
     fetch(`/api/events/${unwrappedParams.id}/stats`)
@@ -55,7 +56,8 @@ export default function DispatchPage({ params }: { params: Promise<{ id: string 
         body: JSON.stringify({ 
           attendeeIds: Array.from(selectedIds), 
           groupLink: groupLink.trim() || undefined,
-          locationLink: locationLink.trim() || undefined
+          locationLink: locationLink.trim() || undefined,
+          note: note.trim() || undefined
         })
       })
       
@@ -182,6 +184,20 @@ export default function DispatchPage({ params }: { params: Promise<{ id: string 
               />
               <p className="text-xs text-muted-foreground">Add a Google Maps link to the venue.</p>
             </div>
+          </div>
+
+          <div className="space-y-2 mb-6">
+            <label htmlFor="note" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Optional Message / Note
+            </label>
+            <textarea
+              id="note"
+              placeholder="e.g. Please remember to bring a valid ID and arrive 15 minutes early."
+              className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">Add a custom message that will appear below the QR code in the email.</p>
           </div>
 
           <Button 
