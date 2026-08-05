@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { createEvent } from "@/app/actions/event"
+import { SubmitButton } from "./submit-button"
 
 export default function CreateEventPage() {
   return (
@@ -42,9 +43,7 @@ export default function CreateEventPage() {
               <Link href="/dashboard" className={buttonVariants({ variant: "outline" })}>
                 Cancel
               </Link>
-              <Button type="submit">
-                Create Event
-              </Button>
+              <SubmitButton />
             </div>
           </form>
         </CardContent>
