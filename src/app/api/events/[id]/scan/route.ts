@@ -36,12 +36,30 @@ export async function POST(
       return new Response(JSON.stringify({ status: "invalid", message: "Ticket Not Found" }), { status: 200 })
     }
 
-    if (attendee.checkInStatus) {
+    // MULTI-DAY CHECK-IN LOGIC
+    // Extract today's local date in YYYY-MM-DD format based on the server's timezone
+    // Note: In production, consider timezone of the event, but local server date is often sufficient.
+    const today = new Date().toLocaleDateString('en-CA'); // 'en-CA' is YYYY-MM-DD
+    
+    // Parse existing history
+    let history: string[] = [];
+    if (attendee.checkInHistory) {
+      try {
+        history = JSON.parse(attendee.checkInHistory);
+      } catch (e) {
+        history = [];
+      }
+    }
+
+    if (history.includes(today)) {
       return new Response(JSON.stringify({ 
         status: "already_scanned", 
-        message: `Already Checked-In at ${attendee.checkedInAt?.toLocaleTimeString()} by ${attendee.checkedInBy?.name || 'Staff'}` 
+        message: `Already Checked-In today at ${attendee.checkedInAt?.toLocaleTimeString()} by ${attendee.checkedInBy?.name || 'Staff'}` 
       }), { status: 200 })
     }
+
+    // Add today to history
+    history.push(today);
 
     // Mark as checked in
     await prisma.attendee.update({
@@ -49,13 +67,14 @@ export async function POST(
       data: {
         checkInStatus: true,
         checkedInAt: new Date(),
+        checkInHistory: JSON.stringify(history),
         checkedInByUserId: session.user.id
       }
     })
 
     return new Response(JSON.stringify({ 
       status: "success", 
-      message: `Checked-in ${attendee.name}`,
+      message: `Checked-in ${attendee.name} for Day ${history.length}`,
       attendee: {
         name: attendee.name,
         email: attendee.email

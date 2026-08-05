@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Trash2, Loader2, ArrowLeft } from "lucide-react"
 import { deleteAttendees } from "@/app/actions/attendee"
 import Link from "next/link"
+import * as xlsx from "xlsx"
 
 export default function AttendeesPage({ params }: { params: Promise<{ id: string }> }) {
   const unwrappedParams = use(params)
@@ -72,6 +73,39 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
     }
   }
 
+  const handleExport = () => {
+    if (attendees.length === 0) return alert("No attendees to export.")
+    
+    const exportData = attendees.map(att => {
+      let daysCheckedIn = 0
+      if (att.checkInHistory) {
+        try {
+          const history = JSON.parse(att.checkInHistory)
+          daysCheckedIn = Array.isArray(history) ? history.length : 0
+        } catch (e) {
+          // fallback
+        }
+      } else if (att.checkInStatus) {
+        daysCheckedIn = 1
+      }
+
+      return {
+        Name: att.name,
+        Email: att.email || "",
+        Phone: att.phone || "",
+        "Ticket Code": att.ticketCode,
+        "Check-In Status": att.checkInStatus ? "Checked In" : "Pending",
+        "Days Attended": daysCheckedIn,
+        "Last Check-In Time": att.checkedInAt ? new Date(att.checkedInAt).toLocaleString() : "",
+      }
+    })
+
+    const worksheet = xlsx.utils.json_to_sheet(exportData)
+    const workbook = xlsx.utils.book_new()
+    xlsx.utils.book_append_sheet(workbook, worksheet, "Attendees")
+    xlsx.writeFile(workbook, `Attendees_Event_${eventId}.xlsx`)
+  }
+
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex items-center gap-4">
@@ -89,14 +123,19 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
             <CardTitle>Attendees List</CardTitle>
             <CardDescription>View all registered attendees and manage their records.</CardDescription>
           </div>
-          <Button 
-            variant="destructive" 
-            onClick={handleDelete}
-            disabled={selectedIds.size === 0 || deleting}
-          >
-            {deleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
-            Delete Selected ({selectedIds.size})
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={handleExport} disabled={attendees.length === 0}>
+              Export to Excel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleDelete}
+              disabled={selectedIds.size === 0 || deleting}
+            >
+              {deleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+              Delete Selected ({selectedIds.size})
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border max-h-[600px] overflow-auto">
@@ -144,7 +183,23 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
                       <TableCell><code className="bg-gray-100 px-1 py-0.5 rounded text-xs">{att.ticketCode}</code></TableCell>
                       <TableCell>
                         {att.checkInStatus ? (
-                          <span className="text-green-600 text-xs font-semibold bg-green-50 px-2 py-1 rounded-full">Checked In</span>
+                          <div className="flex flex-col gap-1 items-start">
+                            <span className="text-green-600 text-[10px] font-semibold bg-green-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                              Checked In
+                            </span>
+                            {att.checkInHistory && (
+                              <span className="text-xs text-gray-500">
+                                {(() => {
+                                  try {
+                                    const h = JSON.parse(att.checkInHistory);
+                                    return Array.isArray(h) ? `(${h.length} Days)` : '';
+                                  } catch (e) {
+                                    return '';
+                                  }
+                                })()}
+                              </span>
+                            )}
+                          </div>
                         ) : (
                           <span className="text-gray-500 text-xs bg-gray-50 px-2 py-1 rounded-full">Pending</span>
                         )}

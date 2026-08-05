@@ -101,6 +101,7 @@ model Attendee {
   ticketCode       String   @unique
   passImageUrl     String?
   checkInStatus    Boolean  @default(false)
+  checkInHistory   String?  // JSON array of checked in dates
   checkedInAt      DateTime?
   isTeamLeader     Boolean  @default(false)
   teamName         String?
