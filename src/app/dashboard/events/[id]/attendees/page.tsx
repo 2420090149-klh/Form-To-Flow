@@ -37,10 +37,6 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
 
   useEffect(() => {
     fetchAttendees()
-    
-    // Poll every 5 seconds for "on the fly" updates while scanning
-    const interval = setInterval(fetchAttendees, 5000)
-    return () => clearInterval(interval)
   }, [eventId])
 
   const toggleAll = () => {
@@ -186,7 +182,7 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {loading ? (
+                {loading && attendees.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="h-24 text-center">
                       <Loader2 className="h-6 w-6 animate-spin mx-auto text-gray-400" />
