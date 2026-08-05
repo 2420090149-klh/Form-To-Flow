@@ -37,6 +37,10 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
 
   useEffect(() => {
     fetchAttendees()
+    
+    // Poll every 5 seconds for "on the fly" updates while scanning
+    const interval = setInterval(fetchAttendees, 5000)
+    return () => clearInterval(interval)
   }, [eventId])
 
   const toggleAll = () => {
@@ -98,8 +102,8 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
         const startDate = new Date(event.date)
         for (let i = 0; i < event.durationDays; i++) {
           const dayDate = new Date(startDate)
-          dayDate.setDate(startDate.getDate() + i)
-          const dateStr = dayDate.toLocaleDateString('en-CA')
+          dayDate.setUTCDate(startDate.getUTCDate() + i)
+          const dateStr = dayDate.toISOString().split('T')[0]
           row[`Day ${i + 1} (${dateStr})`] = history.includes(dateStr) ? "Yes" : "No"
         }
       } else {
@@ -132,10 +136,16 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Attendees List</CardTitle>
-            <CardDescription>View all registered attendees and manage their records.</CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              Attendees List
+              {loading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+            </CardTitle>
+            <CardDescription>View all registered attendees. Updates automatically.</CardDescription>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={fetchAttendees} disabled={loading}>
+              Refresh
+            </Button>
             <Button variant="outline" onClick={handleExport} disabled={attendees.length === 0}>
               Export to Excel
             </Button>
@@ -167,8 +177,8 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
                   {event && event.date && event.durationDays > 0 ? (
                     Array.from({ length: event.durationDays }).map((_, i) => {
                       const d = new Date(event.date);
-                      d.setDate(d.getDate() + i);
-                      return <TableHead key={i}>Day {i + 1} <span className="text-[10px] font-normal text-gray-500">({d.toLocaleDateString('en-CA')})</span></TableHead>
+                      d.setUTCDate(d.getUTCDate() + i);
+                      return <TableHead key={i}>Day {i + 1} <span className="text-[10px] font-normal text-gray-500">({d.toISOString().split('T')[0]})</span></TableHead>
                     })
                   ) : (
                     <TableHead>Status</TableHead>
@@ -204,8 +214,8 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
                       {event && event.date && event.durationDays > 0 ? (
                         Array.from({ length: event.durationDays }).map((_, i) => {
                           const d = new Date(event.date);
-                          d.setDate(d.getDate() + i);
-                          const dateStr = d.toLocaleDateString('en-CA');
+                          d.setUTCDate(d.getUTCDate() + i);
+                          const dateStr = d.toISOString().split('T')[0];
                           let history: string[] = []
                           if (att.checkInHistory) {
                             try { history = JSON.parse(att.checkInHistory) } catch(e){}

@@ -37,9 +37,8 @@ export async function POST(
     }
 
     // MULTI-DAY CHECK-IN LOGIC
-    // Extract today's local date in YYYY-MM-DD format based on the server's timezone
-    // Note: In production, consider timezone of the event, but local server date is often sufficient.
-    const today = new Date().toLocaleDateString('en-CA'); // 'en-CA' is YYYY-MM-DD
+    // Extract today's UTC date in YYYY-MM-DD format to ensure consistency
+    const today = new Date().toISOString().split('T')[0];
     
     // Parse existing history
     let history: string[] = [];
