@@ -22,7 +22,7 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
 
   const fetchAttendees = () => {
     setLoading(true)
-    fetch(`/api/events/${eventId}/stats`)
+    fetch(`/api/events/${eventId}/stats?_t=${Date.now()}`, { cache: 'no-store' })
       .then(res => res.json())
       .then(data => {
         setAttendees(data.attendees || [])
