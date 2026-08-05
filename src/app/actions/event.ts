@@ -11,16 +11,21 @@ export async function createEvent(formData: FormData) {
   const title = formData.get("title") as string
   const description = formData.get("description") as string
   const dateStr = formData.get("date") as string
+  const durationDaysStr = formData.get("durationDays") as string
   const location = formData.get("location") as string
 
   if (!title) throw new Error("Title is required")
+  if (!dateStr) throw new Error("Start date is required")
+
+  const durationDays = parseInt(durationDaysStr) || 1;
 
   const event = await prisma.event.create({
     data: {
       title,
       description,
       location,
-      date: dateStr ? new Date(dateStr) : null,
+      date: new Date(dateStr),
+      durationDays,
       ownerId: session.user.id
     }
   })

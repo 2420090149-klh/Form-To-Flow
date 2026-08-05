@@ -28,13 +28,17 @@ export default function CreateEventPage() {
               <Input id="description" name="description" placeholder="Brief details about the event" />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="date">Date</Label>
-                <Input id="date" name="date" type="date" />
+                <Label htmlFor="date">Start Date</Label>
+                <Input id="date" name="date" type="date" required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="location">Location / Venue</Label>
+                <Label htmlFor="durationDays">Duration (Days)</Label>
+                <Input id="durationDays" name="durationDays" type="number" min="1" max="14" defaultValue="1" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
                 <Input id="location" name="location" placeholder="e.g. Grand Hall" />
               </div>
             </div>

@@ -34,6 +34,10 @@ export async function GET(
     // I will just mock `sent = 0` for now, or update the DB schema if I need it.
     // For this prompt, let's just return total and a dummy sent count of 0.
     return new Response(JSON.stringify({ 
+      event: {
+        date: event.date,
+        durationDays: event.durationDays
+      },
       total: attendees.length, 
       sent: 0, 
       attendees 

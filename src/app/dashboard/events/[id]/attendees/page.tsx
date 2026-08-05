@@ -15,6 +15,7 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
   const eventId = unwrappedParams.id
 
   const [attendees, setAttendees] = useState<any[]>([])
+  const [event, setEvent] = useState<any>(null)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState(false)
@@ -25,6 +26,7 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
       .then(res => res.json())
       .then(data => {
         setAttendees(data.attendees || [])
+        setEvent(data.event || null)
         setLoading(false)
       })
       .catch(err => {
@@ -77,27 +79,37 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
     if (attendees.length === 0) return alert("No attendees to export.")
     
     const exportData = attendees.map(att => {
-      let daysCheckedIn = 0
+      let history: string[] = []
       if (att.checkInHistory) {
         try {
-          const history = JSON.parse(att.checkInHistory)
-          daysCheckedIn = Array.isArray(history) ? history.length : 0
-        } catch (e) {
-          // fallback
-        }
-      } else if (att.checkInStatus) {
-        daysCheckedIn = 1
+          const parsed = JSON.parse(att.checkInHistory)
+          if (Array.isArray(parsed)) history = parsed
+        } catch (e) {}
       }
 
-      return {
+      const row: any = {
         Name: att.name,
         Email: att.email || "",
         Phone: att.phone || "",
         "Ticket Code": att.ticketCode,
-        "Check-In Status": att.checkInStatus ? "Checked In" : "Pending",
-        "Days Attended": daysCheckedIn,
-        "Last Check-In Time": att.checkedInAt ? new Date(att.checkedInAt).toLocaleString() : "",
       }
+
+      if (event && event.date && event.durationDays > 0) {
+        const startDate = new Date(event.date)
+        for (let i = 0; i < event.durationDays; i++) {
+          const dayDate = new Date(startDate)
+          dayDate.setDate(startDate.getDate() + i)
+          const dateStr = dayDate.toLocaleDateString('en-CA')
+          row[`Day ${i + 1} (${dateStr})`] = history.includes(dateStr) ? "Yes" : "No"
+        }
+      } else {
+        row["Check-In Status"] = att.checkInStatus ? "Checked In" : "Pending"
+      }
+      
+      row["Total Days Attended"] = history.length || (att.checkInStatus ? 1 : 0)
+      if (att.checkedInAt) row["Last Check-In Time"] = new Date(att.checkedInAt).toLocaleString()
+      
+      return row
     })
 
     const worksheet = xlsx.utils.json_to_sheet(exportData)
@@ -152,7 +164,15 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
                   <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
                   <TableHead>Ticket Code</TableHead>
-                  <TableHead>Status</TableHead>
+                  {event && event.date && event.durationDays > 0 ? (
+                    Array.from({ length: event.durationDays }).map((_, i) => {
+                      const d = new Date(event.date);
+                      d.setDate(d.getDate() + i);
+                      return <TableHead key={i}>Day {i + 1} <span className="text-[10px] font-normal text-gray-500">({d.toLocaleDateString('en-CA')})</span></TableHead>
+                    })
+                  ) : (
+                    <TableHead>Status</TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -181,29 +201,35 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
                       <TableCell>{att.email || <span className="text-gray-400 italic">N/A</span>}</TableCell>
                       <TableCell>{att.phone || <span className="text-gray-400 italic">N/A</span>}</TableCell>
                       <TableCell><code className="bg-gray-100 px-1 py-0.5 rounded text-xs">{att.ticketCode}</code></TableCell>
-                      <TableCell>
-                        {att.checkInStatus ? (
-                          <div className="flex flex-col gap-1 items-start">
-                            <span className="text-green-600 text-[10px] font-semibold bg-green-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                              Checked In
-                            </span>
-                            {att.checkInHistory && (
-                              <span className="text-xs text-gray-500">
-                                {(() => {
-                                  try {
-                                    const h = JSON.parse(att.checkInHistory);
-                                    return Array.isArray(h) ? `(${h.length} Days)` : '';
-                                  } catch (e) {
-                                    return '';
-                                  }
-                                })()}
-                              </span>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-gray-500 text-xs bg-gray-50 px-2 py-1 rounded-full">Pending</span>
-                        )}
-                      </TableCell>
+                      {event && event.date && event.durationDays > 0 ? (
+                        Array.from({ length: event.durationDays }).map((_, i) => {
+                          const d = new Date(event.date);
+                          d.setDate(d.getDate() + i);
+                          const dateStr = d.toLocaleDateString('en-CA');
+                          let history: string[] = []
+                          if (att.checkInHistory) {
+                            try { history = JSON.parse(att.checkInHistory) } catch(e){}
+                          }
+                          const didAttend = history.includes(dateStr);
+                          return (
+                            <TableCell key={i}>
+                              {didAttend ? (
+                                <span className="text-green-600 text-[10px] font-semibold bg-green-50 px-2 py-0.5 rounded-full uppercase tracking-wider">Checked In</span>
+                              ) : (
+                                <span className="text-gray-400 text-[10px] uppercase bg-gray-50 px-2 py-0.5 rounded-full">Pending</span>
+                              )}
+                            </TableCell>
+                          )
+                        })
+                      ) : (
+                        <TableCell>
+                          {att.checkInStatus ? (
+                            <span className="text-green-600 text-[10px] font-semibold bg-green-50 px-2 py-0.5 rounded-full uppercase tracking-wider">Checked In</span>
+                          ) : (
+                            <span className="text-gray-400 text-[10px] uppercase bg-gray-50 px-2 py-0.5 rounded-full">Pending</span>
+                          )}
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))
                 )}

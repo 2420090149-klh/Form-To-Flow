@@ -65,6 +65,7 @@ model Event {
   title               String
   description         String?
   date                DateTime?
+  durationDays        Int          @default(1)
   location            String?
   templateConfig      String?
   customTemplateImage String?
