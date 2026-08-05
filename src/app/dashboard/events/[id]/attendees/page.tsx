@@ -87,10 +87,20 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
         } catch (e) {}
       }
 
+      let college = ""
+      if (att.customData) {
+        try {
+          const data = JSON.parse(att.customData)
+          const collegeKey = Object.keys(data).find(k => /college|university|school|institution|organization/i.test(k))
+          if (collegeKey) college = data[collegeKey]
+        } catch(e){}
+      }
+
       const row: any = {
         Name: att.name,
         Email: att.email || "",
         Phone: att.phone || "",
+        College: college,
         "Ticket Code": att.ticketCode,
       }
 
@@ -169,6 +179,7 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
+                  <TableHead>College</TableHead>
                   <TableHead>Ticket Code</TableHead>
                   {event && event.date && event.durationDays > 0 ? (
                     Array.from({ length: event.durationDays }).map((_, i) => {
@@ -206,6 +217,23 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
                       <TableCell className="font-medium">{att.name}</TableCell>
                       <TableCell>{att.email || <span className="text-gray-400 italic">N/A</span>}</TableCell>
                       <TableCell>{att.phone || <span className="text-gray-400 italic">N/A</span>}</TableCell>
+                      <TableCell>
+                        {(() => {
+                          let college = ""
+                          if (att.customData) {
+                            try {
+                              const data = JSON.parse(att.customData)
+                              const collegeKey = Object.keys(data).find(k => /college|university|school|institution|organization/i.test(k))
+                              if (collegeKey) college = data[collegeKey]
+                            } catch(e){}
+                          }
+                          return college ? (
+                            <span className="text-xs truncate max-w-[150px] inline-block" title={college}>{college}</span>
+                          ) : (
+                            <span className="text-gray-400 italic text-xs">N/A</span>
+                          )
+                        })()}
+                      </TableCell>
                       <TableCell><code className="bg-gray-100 px-1 py-0.5 rounded text-xs">{att.ticketCode}</code></TableCell>
                       {event && event.date && event.durationDays > 0 ? (
                         Array.from({ length: event.durationDays }).map((_, i) => {
