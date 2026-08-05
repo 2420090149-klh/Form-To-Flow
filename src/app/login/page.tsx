@@ -74,7 +74,7 @@ export default function LoginPage({
           
           <form action={async () => {
             "use server"
-            await signIn("google")
+            await signIn("google", { redirectTo: "/dashboard" })
           }}>
             <Button variant="outline" className="w-full" type="submit">
               <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="github" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
