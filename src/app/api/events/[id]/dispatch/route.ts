@@ -2,6 +2,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import nodemailer from "nodemailer"
 import sharp from "sharp"
+import QRCode from "qrcode"
 
 // Create a test account or mock transport for Nodemailer
 // For production, you'd use your SMTP credentials
@@ -67,8 +68,11 @@ export async function POST(
             const bgBase64 = event.customTemplateImage!.replace(/^data:image\/\w+;base64,/, "")
             const bgBuffer = Buffer.from(bgBase64, 'base64')
             
-            const qrRes = await fetch(`https://quickchart.io/qr?text=${encodeURIComponent(attendee.ticketCode)}&size=${layout.size}&margin=0`)
-            const qrBuffer = Buffer.from(await qrRes.arrayBuffer())
+            const qrBuffer = await QRCode.toBuffer(attendee.ticketCode, {
+              width: layout.size,
+              margin: 0,
+              type: 'png'
+            })
 
             const bgMetadata = await sharp(bgBuffer).metadata()
             const bgW = bgMetadata.width || 800
@@ -110,7 +114,17 @@ export async function POST(
         
         if (!htmlContent) {
           // Fallback to standard template
-          const qrCodeUrl = `https://quickchart.io/qr?text=${encodeURIComponent(attendee.ticketCode)}&size=300`
+          const qrBuffer = await QRCode.toBuffer(attendee.ticketCode, {
+            width: 300,
+            margin: 2,
+            type: 'png'
+          })
+          attachments.push({
+            filename: 'qrcode.png',
+            content: qrBuffer,
+            cid: 'standardqr'
+          })
+
           htmlContent = `
             <div style="font-family: sans-serif; max-w: 600px; margin: 0 auto; text-align: center; border: 1px solid #eee; padding: 40px; border-radius: 12px; background: #fafafa;">
               <h1 style="color: #333; margin-bottom: 5px;">${event.title}</h1>
@@ -121,7 +135,7 @@ export async function POST(
               <p style="color: #555; font-size: 16px;">Here is your official event pass. Please present the QR code below at the check-in desk.</p>
               
               <div style="background: white; display: inline-block; padding: 20px; border-radius: 12px; margin: 20px 0; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                <img src="${qrCodeUrl}" alt="Ticket QR Code" width="200" height="200" style="display: block; margin: 0 auto; border: none; outline: none;"/>
+                <img src="cid:standardqr" alt="Ticket QR Code" width="200" height="200" style="display: block; margin: 0 auto; border: none; outline: none;"/>
               </div>
               
               <p style="font-family: monospace; font-size: 18px; letter-spacing: 2px; color: #333; background: #eee; display: inline-block; padding: 8px 16px; border-radius: 6px;">
@@ -167,13 +181,21 @@ export async function POST(
           await transporter.sendMail({
             from: `"Event Team" <${fromEmail}>`,
             to: attendee.email,
+            replyTo: fromEmail,
             subject: `Your Pass for ${event.title}`,
             html: htmlContent,
-            attachments: attachments
+            attachments: attachments,
+            headers: {
+              "List-Unsubscribe": "<mailto:unsubscribe@eventflow.com>",
+              "Precedence": "bulk"
+            }
           })
           
           console.log(`[EMAIL SENT] Pass sent to ${attendee.email}`)
           sentCount++
+          
+          // Small delay to prevent SMTP rate limits and ensure smooth deliverability
+          await new Promise(resolve => setTimeout(resolve, 500))
         } catch (mailError) {
           console.error(`Failed to send email to ${attendee.email}:`, mailError)
         }
