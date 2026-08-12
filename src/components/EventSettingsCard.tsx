@@ -57,13 +57,22 @@ export function EventSettingsCard({ event }: { event: any }) {
               />
             </div>
             <p className="text-xs text-gray-500">
-              Your site will be at: <span className="font-mono text-indigo-500">formtoflow.com/events/{slug || "[slug]"}</span>
+              Your public registration site URL:
             </p>
-            {slug && (
-              <a href={`/events/${slug}`} target="_blank" className="text-sm text-indigo-600 hover:underline flex items-center">
-                <ExternalLink className="w-3 h-3 mr-1" /> Preview Site
-              </a>
-            )}
+            <div className="flex items-center gap-2 bg-gray-50 border rounded-md p-2">
+              <span className="font-mono text-sm flex-1 text-gray-600 truncate">
+                {typeof window !== 'undefined' ? window.location.origin : 'https://formtoflow.com'}/events/{slug || "[slug]"}
+              </span>
+              {slug && (
+                <a 
+                  href={`/events/${slug}`} 
+                  target="_blank" 
+                  className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded text-xs font-medium hover:bg-indigo-200 flex items-center whitespace-nowrap"
+                >
+                  <ExternalLink className="w-3 h-3 mr-1" /> Open Site
+                </a>
+              )}
+            </div>
           </div>
           
           <div className="space-y-2">
