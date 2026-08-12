@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Upload, FileImage, Send, Users, QrCode, Shield } from "lucide-react"
 import { DeleteEventButton } from "./delete-button"
+import { EventSettingsCard } from "@/components/EventSettingsCard"
 
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
@@ -127,6 +128,11 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
           </div>
         </CardContent>
       </Card>
+
+      {/* Public Registration Settings */}
+      {session.user.id === event.ownerId && (
+        <EventSettingsCard event={event} />
+      )}
 
       {session.user.id === event.ownerId && (
         <Card className="border-red-200 bg-red-50/50">

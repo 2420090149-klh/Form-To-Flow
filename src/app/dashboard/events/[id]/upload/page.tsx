@@ -15,7 +15,7 @@ interface ExtractedAttendee {
   phone: string | null
   teamName: string | null
   isTeamLeader: boolean
-  customData: string
+  customData: any
 }
 
 export default function UploadPage({ params }: { params: Promise<{ id: string }> }) {
@@ -114,7 +114,7 @@ export default function UploadPage({ params }: { params: Promise<{ id: string }>
           phone: leaderPhone,
           teamName,
           isTeamLeader: true,
-          customData: JSON.stringify(rowData)
+          customData: rowData
         })
       }
 
@@ -142,7 +142,7 @@ export default function UploadPage({ params }: { params: Promise<{ id: string }>
             phone,
             teamName,
             isTeamLeader: false,
-            customData: JSON.stringify(rowData)
+            customData: rowData
           })
         }
       })

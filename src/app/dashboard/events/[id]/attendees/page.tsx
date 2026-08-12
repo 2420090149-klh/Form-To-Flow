@@ -90,7 +90,7 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
       let college = ""
       if (att.customData) {
         try {
-          const data = JSON.parse(att.customData)
+          const data: any = typeof att.customData === 'string' ? JSON.parse(att.customData) : att.customData
           const collegeKey = Object.keys(data).find(k => /college|university|school|institution|organization/i.test(k))
           if (collegeKey) college = data[collegeKey]
         } catch(e){}
@@ -224,7 +224,7 @@ export default function AttendeesPage({ params }: { params: Promise<{ id: string
                           let college = ""
                           if (att.customData) {
                             try {
-                              const data = JSON.parse(att.customData)
+                              const data: any = typeof att.customData === 'string' ? JSON.parse(att.customData) : att.customData
                               const collegeKey = Object.keys(data).find(k => /college|university|school|institution|organization/i.test(k))
                               if (collegeKey) college = data[collegeKey]
                             } catch(e){}

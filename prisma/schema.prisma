@@ -67,6 +67,9 @@ model Event {
   date                DateTime?
   durationDays        Int          @default(1)
   location            String?
+  slug                String?      @unique
+  landingTemplate     String       @default("minimal")
+  formSchema          Json?
   templateConfig      String?
   customTemplateImage String?
   customTemplateLayout String?
@@ -98,7 +101,7 @@ model Attendee {
   name             String
   email            String?
   phone            String?
-  customData       String?  // JSON stored as string for SQLite
+  customData       Json?
   ticketCode       String   @unique
   passImageUrl     String?
   checkInStatus    Boolean  @default(false)
