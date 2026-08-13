@@ -34,7 +34,6 @@ export default async function DashboardPage() {
   })
 
   return (
-  return (
     <div className="space-y-8 relative">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-white/10 animate-in fade-in slide-in-from-top-4 duration-700">
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">Your Events</h1>
