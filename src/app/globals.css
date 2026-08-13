@@ -129,3 +129,58 @@
     @apply font-sans;
   }
 }
+
+/* Custom God-Tier Animations */
+@keyframes slideUpFade {
+  0% { opacity: 0; transform: translateY(40px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInZoom {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideDownFade {
+  0% { opacity: 0; transform: translateY(-40px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gradientX {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-in {
+  animation-duration: 700ms;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+}
+
+.fade-in {
+  animation-name: fadeInZoom;
+}
+
+.slide-in-from-bottom-8,
+.slide-in-from-bottom-4 {
+  animation-name: slideUpFade;
+}
+
+.slide-in-from-top-4 {
+  animation-name: slideDownFade;
+}
+
+.zoom-in-95 {
+  animation-name: fadeInZoom;
+}
+
+.zoom-in {
+  animation-name: fadeInZoom;
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradientX 5s ease infinite;
+}
