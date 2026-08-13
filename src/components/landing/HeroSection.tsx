@@ -123,23 +123,23 @@ export function HeroSection() {
             <motion.div 
               animate={{ y: [-5, 5, -5] }}
               transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-              className="hidden sm:block absolute -right-2 md:-right-8 lg:-right-12 bottom-4 md:bottom-12 z-30 w-56 md:w-64 bg-background border border-border rounded-xl shadow-xl overflow-hidden"
+              className="hidden sm:block absolute -right-0 md:-right-4 lg:-right-6 bottom-4 md:bottom-12 z-30 w-56 md:w-64 bg-background dark:bg-card border border-border rounded-xl shadow-xl dark:shadow-2xl dark:shadow-primary/10 overflow-hidden"
             >
-              <div className="p-3 md:p-4 border-b border-border bg-muted/30 flex justify-between items-center">
+              <div className="p-3 md:p-4 border-b border-border bg-muted/30 dark:bg-muted/10 flex justify-between items-center">
                 <span className="text-[10px] md:text-xs font-semibold flex items-center gap-2"><ScanLine className="w-3 h-3" /> Scanner</span>
               </div>
               
-              <div className="relative p-4 md:p-6 flex justify-center items-center h-24 md:h-32 bg-slate-50 dark:bg-slate-900 overflow-hidden">
-                <QrCode className="w-12 h-12 md:w-16 md:h-16 text-muted-foreground opacity-50" />
+              <div className="relative p-4 md:p-6 flex justify-center items-center h-24 md:h-32 bg-slate-50 dark:bg-slate-900/50 overflow-hidden">
+                <QrCode className="w-12 h-12 md:w-16 md:h-16 text-muted-foreground opacity-50 dark:opacity-30" />
                 <motion.div 
-                  className="absolute left-0 right-0 h-0.5 bg-primary shadow-[0_0_8px_2px_rgba(59,130,246,0.5)]"
+                  className="absolute left-0 right-0 h-0.5 bg-primary shadow-[0_0_8px_2px_rgba(59,130,246,0.5)] dark:shadow-[0_0_12px_3px_rgba(59,130,246,0.6)]"
                   animate={{ top: ["10%", "90%", "10%"] }}
                   transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
                 />
               </div>
 
-              <div className="p-3 md:p-4 bg-green-500/10 border-t border-green-500/20">
-                <div className="flex items-center gap-2 text-green-600 mb-1">
+              <div className="p-3 md:p-4 bg-green-500/10 dark:bg-green-500/5 border-t border-green-500/20 dark:border-green-500/10">
+                <div className="flex items-center gap-2 text-green-600 dark:text-green-400 mb-1">
                   <CheckCircle2 className="w-3 h-3 md:w-4 md:h-4" />
                   <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider">Entry Verified</span>
                 </div>
@@ -152,9 +152,9 @@ export function HeroSection() {
             <motion.div 
               animate={{ y: [0, -10, 0] }}
               transition={{ repeat: Infinity, duration: 5, delay: 1 }}
-              className="hidden sm:flex absolute -left-2 md:-left-8 lg:-left-12 top-10 md:top-16 z-10 bg-background border border-border rounded-lg shadow-lg p-2 md:p-3 items-center gap-2 md:gap-3"
+              className="hidden sm:flex absolute -left-2 md:-left-6 lg:-left-10 top-10 md:top-16 z-10 bg-background dark:bg-card border border-border rounded-lg shadow-lg dark:shadow-xl dark:shadow-primary/5 p-2 md:p-3 items-center gap-2 md:gap-3"
             >
-              <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600">
+              <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
                 <Check className="w-3 h-3 md:w-4 md:h-4" />
               </div>
               <div className="flex flex-col">
@@ -166,9 +166,9 @@ export function HeroSection() {
             <motion.div 
               animate={{ y: [0, 8, 0] }}
               transition={{ repeat: Infinity, duration: 4.5, delay: 2 }}
-              className="hidden sm:flex absolute left-2 md:left-4 -bottom-4 md:-bottom-6 z-10 bg-background border border-border rounded-lg shadow-lg p-2 md:p-3 items-center gap-2 md:gap-3"
+              className="hidden sm:flex absolute left-2 md:left-6 -bottom-4 md:-bottom-6 z-10 bg-background dark:bg-card border border-border rounded-lg shadow-lg dark:shadow-xl dark:shadow-primary/5 p-2 md:p-3 items-center gap-2 md:gap-3"
             >
-              <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-600">
+              <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-green-500/10 dark:bg-green-500/20 flex items-center justify-center text-green-600 dark:text-green-400">
                 <Activity className="w-3 h-3 md:w-4 md:h-4" />
               </div>
               <div className="flex flex-col">
