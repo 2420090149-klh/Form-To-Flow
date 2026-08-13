@@ -19,10 +19,10 @@ export function Navbar() {
   }, [])
 
   const navLinks = [
-    { name: "How It Works", href: "#how-it-works" },
-    { name: "Features", href: "#features" },
-    { name: "For Events", href: "#use-cases" },
-    { name: "Pricing", href: "#pricing" },
+    { name: "How It Works", href: "/#how-it-works" },
+    { name: "Features", href: "/#features" },
+    { name: "About", href: "/about" },
+    { name: "Pricing", href: "/#pricing" },
   ]
 
   return (
