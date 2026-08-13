@@ -15,9 +15,23 @@ type TeamMember = {
 const team: TeamMember[] = [
   {
     name: "K Dheeran",
-    role: "Product & Full-Stack Developer",
+    role: "Lead Product Engineer",
     description: "Building the technology and product experience behind FormToFlow.",
     linkedinUrl: "#", // Placeholder
+    githubUrl: "https://github.com/2420090149-klh",
+  },
+  {
+    name: "B Deepak",
+    role: "Frontend & UI Developer",
+    description: "Crafting intuitive user interfaces and seamless event workflows.",
+    linkedinUrl: "https://www.linkedin.com/in/deepak-botla-36124631b",
+    githubUrl: "#", // Placeholder
+  },
+  {
+    name: "D Ruchit",
+    role: "Backend & Systems Developer",
+    description: "Architecting reliable data pipelines and secure check-in systems.",
+    linkedinUrl: "https://www.linkedin.com/in/ruchit-dwara-560210365",
     githubUrl: "#", // Placeholder
   }
 ]
