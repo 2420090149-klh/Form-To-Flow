@@ -62,9 +62,11 @@ export async function updateEventSettings(eventId: string, data: { slug?: string
 
   if (!event) throw new Error("Event not found or unauthorized")
 
+  const cleanSlug = data.slug ? data.slug.toLowerCase().replace(/[^a-z0-9\-]/g, '-') : null
+
   // Check if slug is unique if provided
-  if (data.slug) {
-    const existing = await prisma.event.findFirst({ where: { slug: data.slug, id: { not: eventId } } })
+  if (cleanSlug) {
+    const existing = await prisma.event.findFirst({ where: { slug: cleanSlug, id: { not: eventId } } })
     if (existing) throw new Error("Slug is already taken")
   }
 
@@ -76,8 +78,6 @@ export async function updateEventSettings(eventId: string, data: { slug?: string
       throw new Error("Invalid JSON in Form Schema")
     }
   }
-
-  const cleanSlug = data.slug ? data.slug.toLowerCase().replace(/[^a-z0-9\-]/g, '-') : null
 
   await prisma.event.update({
     where: { id: eventId },

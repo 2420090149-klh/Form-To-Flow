@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -38,6 +38,14 @@ export function EventSettingsCard({ event }: { event: any }) {
     }
     return DEFAULT_FIELDS
   })
+
+  useEffect(() => {
+    setSlug(event.slug || "")
+    setLandingTemplate(event.landingTemplate || "neon")
+    if (event.formSchema && Array.isArray(event.formSchema) && event.formSchema.length > 0) {
+      setFields(event.formSchema)
+    }
+  }, [event])
 
   const handleSave = async () => {
     setLoading(true)
