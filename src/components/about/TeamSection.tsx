@@ -35,7 +35,7 @@ const team: TeamMember[] = [
     description: "Architecting reliable data pipelines and secure check-in systems.",
     imageUrl: "/team/ruchit.png",
     linkedinUrl: "https://www.linkedin.com/in/ruchit-dwara-560210365",
-    githubUrl: "#", // Placeholder
+    githubUrl: "https://github.com/klh2420090129",
   }
 ]
 
