@@ -40,6 +40,7 @@ export function EventSettingsCard({ event }: { event: any }) {
   })
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSlug(event.slug || "")
     setLandingTemplate(event.landingTemplate || "neon")
     if (event.formSchema && Array.isArray(event.formSchema) && event.formSchema.length > 0) {

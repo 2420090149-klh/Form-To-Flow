@@ -55,7 +55,7 @@ export default function HomePage() {
 
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full sm:w-auto px-4 sm:px-0 animate-in fade-in zoom-in-95 duration-1000 delay-300 fill-mode-both pt-4">
           <Link href="/register" className={cn(buttonVariants({ variant: "default", size: "lg" }), "text-lg px-8 h-14 w-full sm:w-auto bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-xl shadow-primary/25 hover:scale-105 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group border-0")}>
-            <span className="relative z-10 font-semibold">Create an Event — It's Free</span>
+            <span className="relative z-10 font-semibold">Create an Event — It&apos;s Free</span>
             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out" />
           </Link>
           <Link href="/login" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "text-lg px-8 h-14 w-full sm:w-auto border-border/50 hover:border-primary/50 hover:bg-primary/5 hover:scale-105 transition-all duration-300 backdrop-blur-sm bg-background/50 font-medium")}>
