@@ -26,7 +26,11 @@ export default function LoginPage({
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background p-4 relative overflow-hidden">
+    <div className="flex min-h-screen items-center justify-center bg-background relative overflow-hidden animate-in fade-in duration-700">
+      {/* Ambient Glows */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[120px] pointer-events-none animate-pulse duration-10000" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-secondary/10 blur-[120px] pointer-events-none animate-pulse duration-10000" />
+      
       {/* Decorative Floating Icons */}
       <Mail className="absolute top-[15%] left-[20%] w-12 h-12 text-primary/30 animate-[bounce_4s_ease-in-out_infinite]" />
       <Shield className="absolute top-[20%] right-[25%] w-16 h-16 text-secondary/30 animate-[pulse_5s_ease-in-out_infinite]" />
@@ -34,29 +38,29 @@ export default function LoginPage({
       <Lock className="absolute bottom-[20%] right-[20%] w-14 h-14 text-purple-500/20 animate-[pulse_7s_ease-in-out_infinite]" />
       <Calendar className="absolute top-[40%] left-[5%] w-24 h-24 text-primary/10 animate-[spin_15s_linear_infinite]" />
       
-      <Card className="w-full max-w-md relative z-10 border-primary/20 dark:shadow-[0_0_30px_-5px_rgba(96,165,250,0.3)]">
+      <Card className="w-full max-w-md relative z-10 border-white/10 backdrop-blur-xl bg-background/60 shadow-2xl shadow-primary/5 animate-in slide-in-from-bottom-8 zoom-in-95 duration-1000">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">Welcome back</CardTitle>
+          <CardDescription className="text-muted-foreground text-sm">
             Enter your email to sign in to your account
           </CardDescription>
           {searchParams?.error === "CredentialsSignin" && (
-            <div className="text-sm font-medium text-destructive mt-2">
+            <div className="text-sm font-medium text-destructive mt-2 animate-in slide-in-from-top-2">
               Invalid email or password.
             </div>
           )}
         </CardHeader>
         <CardContent className="space-y-4">
           <form action={loginAction} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" placeholder="m@example.com" required />
+            <div className="space-y-2 group">
+              <Label htmlFor="email" className="text-muted-foreground group-focus-within:text-primary transition-colors">Email</Label>
+              <Input id="email" name="email" type="email" placeholder="m@example.com" required className="bg-background/50 border-white/10 focus-visible:ring-primary transition-all" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" name="password" type="password" required />
+            <div className="space-y-2 group">
+              <Label htmlFor="password" className="text-muted-foreground group-focus-within:text-primary transition-colors">Password</Label>
+              <Input id="password" name="password" type="password" required className="bg-background/50 border-white/10 focus-visible:ring-primary transition-all" />
             </div>
-            <Button className="w-full" type="submit">
+            <Button className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-lg shadow-primary/25 hover:scale-[1.02] transition-all duration-300" type="submit">
               Sign In
             </Button>
           </form>
