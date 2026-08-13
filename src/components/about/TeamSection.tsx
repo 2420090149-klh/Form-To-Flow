@@ -17,6 +17,7 @@ const team: TeamMember[] = [
     name: "K Dheeran",
     role: "Lead Product Engineer",
     description: "Building the technology and product experience behind FormToFlow.",
+    imageUrl: "/team/dheeran.png",
     linkedinUrl: "#", // Placeholder
     githubUrl: "https://github.com/2420090149-klh",
   },
@@ -24,6 +25,7 @@ const team: TeamMember[] = [
     name: "B Deepak",
     role: "Frontend & UI Developer",
     description: "Crafting intuitive user interfaces and seamless event workflows.",
+    imageUrl: "/team/deepak.png",
     linkedinUrl: "https://www.linkedin.com/in/deepak-botla-36124631b",
     githubUrl: "#", // Placeholder
   },
@@ -31,6 +33,7 @@ const team: TeamMember[] = [
     name: "D Ruchit",
     role: "Backend & Systems Developer",
     description: "Architecting reliable data pipelines and secure check-in systems.",
+    imageUrl: "/team/ruchit.png",
     linkedinUrl: "https://www.linkedin.com/in/ruchit-dwara-560210365",
     githubUrl: "#", // Placeholder
   }
