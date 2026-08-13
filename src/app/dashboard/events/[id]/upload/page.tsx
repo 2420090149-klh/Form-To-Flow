@@ -180,11 +180,19 @@ export default function UploadPage({ params }: { params: Promise<{ id: string }>
   }
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Intelligent File Upload</CardTitle>
-          <CardDescription>Upload an Excel or CSV file. Map the required fields, and we will extract the rest of the attendees automatically.</CardDescription>
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 relative">
+      <div className="absolute -z-10 top-0 right-0 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute -z-10 bottom-0 left-0 w-64 h-64 bg-green-500/10 blur-[100px] rounded-full pointer-events-none" />
+      
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-indigo-500 drop-shadow-sm">Upload Attendees</h1>
+      </div>
+      
+      <Card className="backdrop-blur-xl bg-background/60 border-white/10 shadow-lg overflow-hidden relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent pointer-events-none" />
+        <CardHeader className="relative z-10">
+          <CardTitle className="text-xl font-bold text-foreground">Intelligent File Upload</CardTitle>
+          <CardDescription className="text-muted-foreground">Upload an Excel or CSV file. Map the required fields, and we will extract the rest of the attendees automatically.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -195,14 +203,14 @@ export default function UploadPage({ params }: { params: Promise<{ id: string }>
       </Card>
 
       {showMapping && (
-        <Card className="border-blue-100 shadow-sm">
-          <CardHeader className="bg-blue-50/50 pb-4 border-b">
+        <Card className="border-blue-500/20 shadow-[0_0_30px_-5px_rgba(59,130,246,0.1)] backdrop-blur-xl bg-background/60 mt-8 animate-in slide-in-from-bottom-4">
+          <CardHeader className="bg-blue-500/5 pb-4 border-b border-blue-500/10">
             <div className="flex items-center gap-2">
-              <Settings2 className="text-blue-600 h-5 w-5" />
-              <CardTitle className="text-blue-800 text-lg">Map Your Columns</CardTitle>
+              <Settings2 className="w-5 h-5 text-blue-500" />
+              <CardTitle className="text-blue-500 text-lg font-bold">Map Your Columns</CardTitle>
             </div>
-            <CardDescription className="text-blue-700/80 mt-1">
-              We tried to guess the correct columns from your file. Please verify or change them below.
+            <CardDescription className="text-muted-foreground mt-1">
+              Match your file's columns to the required attendee fields.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6 space-y-6">
@@ -261,14 +269,14 @@ export default function UploadPage({ params }: { params: Promise<{ id: string }>
       )}
 
       {fileProcessed && (
-        <Card className="border-green-100 shadow-sm">
-          <CardHeader className="bg-green-50/50 pb-4 border-b">
+        <Card className="border-green-500/20 shadow-[0_0_30px_-5px_rgba(34,197,94,0.1)] backdrop-blur-xl bg-background/60 mt-8 animate-in slide-in-from-bottom-4">
+          <CardHeader className="bg-green-500/5 pb-4 border-b border-green-500/10">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="text-green-600 h-5 w-5" />
-              <CardTitle className="text-green-800 text-lg">Extraction Complete</CardTitle>
+              <CheckCircle2 className="w-5 h-5 text-green-500" />
+              <CardTitle className="text-green-500 text-lg font-bold">Extraction Complete</CardTitle>
             </div>
-            <CardDescription className="text-green-700/80 mt-1">
-              We parsed <strong>{rawRows.length}</strong> rows and automatically extracted <strong>{extractedAttendees.length}</strong> individual attendees.
+            <CardDescription className="text-muted-foreground mt-1">
+              Successfully extracted {extractedAttendees.length} attendees. Review below before uploading.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6 space-y-6">

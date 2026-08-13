@@ -80,11 +80,13 @@ export default function DispatchPage({ params }: { params: Promise<{ id: string 
   const progress = stats.total > 0 ? Math.round((stats.sent / stats.total) * 100) : 0
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Email Dispatch</CardTitle>
-          <CardDescription>Send generated passes and QR codes to your attendees.</CardDescription>
+    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 relative">
+      <div className="absolute -z-10 top-0 left-0 w-64 h-64 bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none" />
+      <Card className="backdrop-blur-xl bg-background/60 border-white/10 shadow-lg relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none" />
+        <CardHeader className="relative z-10">
+          <CardTitle className="text-xl font-bold text-foreground">Email Dispatch</CardTitle>
+          <CardDescription className="text-muted-foreground">Send generated passes and QR codes to your attendees.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">

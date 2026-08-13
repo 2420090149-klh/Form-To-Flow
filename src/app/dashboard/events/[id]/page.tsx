@@ -73,18 +73,24 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   ]
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 relative">
+      <div className="absolute -z-10 -top-20 -left-20 w-72 h-72 bg-indigo-500/20 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute -z-10 top-40 -right-20 w-72 h-72 bg-purple-500/20 blur-[100px] rounded-full pointer-events-none" />
+
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">{event.title}</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 drop-shadow-sm">
+            {event.title}
+          </h1>
+          <p className="text-muted-foreground mt-2 font-medium flex items-center gap-2">
+            <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse" />
             {event.date ? new Date(event.date).toLocaleDateString() : "No date"} • {event.location || "No location"}
           </p>
         </div>
         <div className="flex gap-2">
           <Link href={`/events/${event.id}/scan`} target="_blank">
-            <Button variant="outline">
-              <QrCode className="mr-2 h-4 w-4" /> Open Scanner
+            <Button variant="outline" className="border-indigo-500/30 hover:border-indigo-500 hover:bg-indigo-500/10 transition-all duration-300 shadow-[0_0_15px_-3px_rgba(99,102,241,0.2)] hover:shadow-[0_0_25px_-3px_rgba(99,102,241,0.4)]">
+              <QrCode className="mr-2 h-4 w-4 text-indigo-500" /> Open Scanner
             </Button>
           </Link>
         </div>
@@ -93,37 +99,40 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {actions.map((action, i) => (
           <Link key={i} href={action.href} target={action.external ? "_blank" : undefined}>
-            <Card className="h-full hover:border-blue-500 transition-colors cursor-pointer">
-              <CardHeader className="flex flex-row items-center gap-4">
-                <div className="p-2 bg-gray-50 rounded-lg">
+            <Card className="h-full group relative overflow-hidden backdrop-blur-xl bg-background/60 border-white/10 hover:border-indigo-500/50 transition-all duration-500 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-indigo-500/20 hover:-translate-y-1">
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <CardHeader className="flex flex-row items-center gap-4 relative z-10">
+                <div className="p-3 bg-background shadow-inner rounded-xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 border border-white/5">
                   {action.icon}
                 </div>
                 <div>
-                  <CardTitle className="text-lg">{action.title}</CardTitle>
+                  <CardTitle className="text-lg font-bold group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-indigo-500 group-hover:to-purple-500 transition-all">{action.title}</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent>
-                <CardDescription>{action.description}</CardDescription>
+              <CardContent className="relative z-10">
+                <CardDescription className="text-muted-foreground group-hover:text-foreground/80 transition-colors">
+                  {action.description}
+                </CardDescription>
               </CardContent>
             </Card>
           </Link>
         ))}
       </div>
 
-      <Card>
+      <Card className="backdrop-blur-xl bg-background/60 border-white/10 shadow-lg">
         <CardHeader>
-          <CardTitle>Event Overview</CardTitle>
+          <CardTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-indigo-500">Event Overview</CardTitle>
           <CardDescription>Quick stats for this event</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="space-y-1">
-              <p className="text-sm text-gray-500 font-medium">Total Attendees</p>
-              <p className="text-2xl font-bold">{event._count.attendees}</p>
+            <div className="space-y-1 p-4 rounded-xl bg-primary/5 border border-primary/10">
+              <p className="text-sm text-muted-foreground font-medium">Total Attendees</p>
+              <p className="text-3xl font-extrabold text-foreground">{event._count.attendees}</p>
             </div>
-            <div className="space-y-1">
-              <p className="text-sm text-gray-500 font-medium">Owner</p>
-              <p className="text-lg">{event.owner.name || event.owner.email}</p>
+            <div className="space-y-1 p-4 rounded-xl bg-primary/5 border border-primary/10">
+              <p className="text-sm text-muted-foreground font-medium">Owner</p>
+              <p className="text-lg font-semibold truncate text-foreground">{event.owner.name || event.owner.email}</p>
             </div>
           </div>
         </CardContent>
@@ -135,10 +144,12 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
       )}
 
       {session.user.id === event.ownerId && (
-        <Card className="border-red-200 bg-red-50/50">
+        <Card className="border-red-500/20 bg-red-500/5 backdrop-blur-xl shadow-[0_0_30px_-5px_rgba(239,68,68,0.1)]">
           <CardHeader>
-            <CardTitle className="text-red-600">Danger Zone</CardTitle>
-            <CardDescription className="text-red-600/80">
+            <CardTitle className="text-red-500 flex items-center gap-2">
+              <Shield className="w-5 h-5" /> Danger Zone
+            </CardTitle>
+            <CardDescription className="text-red-500/80">
               Irreversible destructive actions
             </CardDescription>
           </CardHeader>
