@@ -11,23 +11,7 @@ export default function ScannerPage({ params }: { params: Promise<{ eventId: str
   const [scanResult, setScanResult] = useState<{status: string, message: string, attendee?: any} | null>(null)
   const scannerRef = useRef<Html5QrcodeScanner | null>(null)
 
-  useEffect(() => {
-    scannerRef.current = new Html5QrcodeScanner(
-      "reader",
-      { fps: 10, qrbox: { width: 250, height: 250 } },
-      false
-    )
-
-    scannerRef.current.render(onScanSuccess, onScanFailure)
-
-    return () => {
-      if (scannerRef.current) {
-        scannerRef.current.clear().catch(err => console.error("Failed to clear scanner", err))
-      }
-    }
-  }, [unwrappedParams.eventId])
-
-  const onScanSuccess = async (decodedText: string) => {
+  const onScanSuccess = useCallback(async (decodedText: string) => {
     // Prevent multiple scans while processing
     if (scannerRef.current) {
       scannerRef.current.pause(true)
@@ -57,11 +41,30 @@ export default function ScannerPage({ params }: { params: Promise<{ eventId: str
         if (scannerRef.current) scannerRef.current.resume()
       }, 3000)
     }
-  }
+  }, [unwrappedParams.eventId])
 
-  const onScanFailure = (error: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+  const onScanFailure = useCallback((error: any) => {
     // handle scan failure, usually better to ignore and keep scanning
-  }
+  }, [])
+
+  useEffect(() => {
+    if (!unwrappedParams.eventId) return
+
+    scannerRef.current = new Html5QrcodeScanner(
+      "reader",
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      false
+    )
+
+    scannerRef.current.render(onScanSuccess, onScanFailure)
+
+    return () => {
+      if (scannerRef.current) {
+        scannerRef.current.clear().catch(err => console.error("Failed to clear scanner", err))
+      }
+    }
+  }, [unwrappedParams.eventId, onScanSuccess, onScanFailure])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black p-4">
