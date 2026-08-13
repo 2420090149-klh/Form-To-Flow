@@ -60,7 +60,7 @@ export async function POST(
     for (const attendee of attendees) {
       if (attendee.email) {
         let htmlContent = ""
-        let attachments: any[] = []
+        const attachments: any[] = []
 
         if (isCustom) {
           try {
