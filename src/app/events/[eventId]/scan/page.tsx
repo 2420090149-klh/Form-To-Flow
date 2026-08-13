@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState, use } from "react"
+import { useEffect, useRef, useState, use, useCallback } from "react"
 import { Html5QrcodeScanner } from "html5-qrcode"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
