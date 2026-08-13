@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
+import { revalidatePath } from "next/cache"
 
 export async function createEvent(formData: FormData) {
   const session = await auth()
@@ -76,12 +77,16 @@ export async function updateEventSettings(eventId: string, data: { slug?: string
     }
   }
 
+  const cleanSlug = data.slug ? data.slug.toLowerCase().replace(/[^a-z0-9\-]/g, '-') : null
+
   await prisma.event.update({
     where: { id: eventId },
     data: {
-      slug: data.slug || null,
+      slug: cleanSlug,
       landingTemplate: data.landingTemplate || "minimal",
       formSchema: parsedSchema || null
     }
   })
+
+  revalidatePath("/", "layout")
 }

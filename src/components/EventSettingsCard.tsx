@@ -100,7 +100,7 @@ export function EventSettingsCard({ event }: { event: any }) {
             <div className="flex gap-2">
               <Input 
                 value={slug} 
-                onChange={e => setSlug(e.target.value)} 
+                onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9\-]/g, '-'))} 
                 placeholder="e.g. hackathon-2026"
               />
             </div>
