@@ -57,7 +57,7 @@ export async function addTeamMember(formData: FormData) {
     // Send invite email with temporary password
     try {
       await transporter.sendMail({
-        from: `"Event Team" <${fromEmail}>`,
+        from: `"${event.title || 'Event Team'}" <${fromEmail}>`,
         to: email,
         subject: `You've been invited to ${event.title}`,
         html: `

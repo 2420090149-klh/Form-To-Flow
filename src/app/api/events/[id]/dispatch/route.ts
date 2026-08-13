@@ -179,7 +179,7 @@ export async function POST(
         
         try {
           await transporter.sendMail({
-            from: `"Event Team" <${fromEmail}>`,
+            from: `"${event.title || 'Event Team'}" <${fromEmail}>`,
             to: attendee.email,
             replyTo: fromEmail,
             subject: `Your Pass for ${event.title}`,
