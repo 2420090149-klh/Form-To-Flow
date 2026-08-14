@@ -14,7 +14,7 @@ export function UseCases() {
   ]
 
   return (
-    <section id="use-cases" className="py-24 bg-slate-50 relative overflow-hidden">
+    <section id="use-cases" className="py-12 md:py-16 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-primary/5 blur-[100px] pointer-events-none" />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10">

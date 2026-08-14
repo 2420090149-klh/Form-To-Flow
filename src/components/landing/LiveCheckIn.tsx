@@ -50,7 +50,7 @@ export function LiveCheckIn() {
   const remaining = totalGuests - checkedIn
 
   return (
-    <section className="py-24 bg-slate-50 overflow-hidden">
+    <section className="py-12 md:py-16 relative overflow-hidden">
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           

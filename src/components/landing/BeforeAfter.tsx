@@ -23,7 +23,7 @@ export function BeforeAfter() {
   ]
 
   return (
-    <section className="py-24 bg-background">
+    <section className="py-12 md:py-16 relative overflow-hidden">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4 text-foreground">

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Upload, CheckCircle2, Settings2 } from "lucide-react"
+import { Upload, CheckCircle2, Settings2, FileSpreadsheet, DownloadCloud, Loader2, ArrowRight } from "lucide-react"
 
 interface ExtractedAttendee {
   name: string
@@ -180,145 +180,198 @@ export default function UploadPage({ params }: { params: Promise<{ id: string }>
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 relative">
-      <div className="absolute -z-10 top-0 right-0 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full pointer-events-none" />
-      <div className="absolute -z-10 bottom-0 left-0 w-64 h-64 bg-green-500/10 blur-[100px] rounded-full pointer-events-none" />
+    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 relative">
       
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-indigo-500 drop-shadow-sm">Upload Attendees</h1>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black tracking-tight text-foreground flex items-center gap-3">
+            <FileSpreadsheet className="w-8 h-8 text-primary" />
+            Import Guests
+          </h1>
+          <p className="text-muted-foreground mt-1 text-sm">Upload your registration spreadsheet and automatically extract guest details.</p>
+        </div>
       </div>
       
-      <Card className="backdrop-blur-xl bg-background/60 border-white/10 shadow-lg overflow-hidden relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent pointer-events-none" />
-        <CardHeader className="relative z-10">
-          <CardTitle className="text-xl font-bold text-foreground">Intelligent File Upload</CardTitle>
-          <CardDescription className="text-muted-foreground">Upload an Excel or CSV file. Map the required fields, and we will extract the rest of the attendees automatically.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="file">Attendee File</Label>
-            <Input id="file" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" onChange={handleFileUpload} />
-          </div>
-        </CardContent>
-      </Card>
-
-      {showMapping && (
-        <Card className="border-blue-500/20 shadow-[0_0_30px_-5px_rgba(59,130,246,0.1)] backdrop-blur-xl bg-background/60 mt-8 animate-in slide-in-from-bottom-4">
-          <CardHeader className="bg-blue-500/5 pb-4 border-b border-blue-500/10">
-            <div className="flex items-center gap-2">
-              <Settings2 className="w-5 h-5 text-blue-500" />
-              <CardTitle className="text-blue-500 text-lg font-bold">Map Your Columns</CardTitle>
+      {!showMapping && !fileProcessed && (
+        <Card className="backdrop-blur-xl bg-background/60 border-border/40 shadow-sm overflow-hidden relative">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-indigo-500" />
+          <CardHeader className="text-center pt-12 pb-6 relative z-10">
+            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+              <DownloadCloud className="w-8 h-8 text-primary" />
             </div>
-            <CardDescription className="text-muted-foreground mt-1">
-              Match your file's columns to the required attendee fields.
+            <CardTitle className="text-2xl font-bold text-foreground">Upload Spreadsheet</CardTitle>
+            <CardDescription className="text-muted-foreground max-w-md mx-auto mt-2">
+              Supports .csv, .xlsx, and .xls formats. We'll automatically identify columns and teams.
             </CardDescription>
           </CardHeader>
-          <CardContent className="pt-6 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Primary Name Column</Label>
+          <CardContent className="pb-12">
+            <div className="max-w-md mx-auto">
+              <div className="relative group cursor-pointer">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-indigo-500 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
+                <div className="relative bg-background border-2 border-dashed border-border/60 hover:border-primary/50 transition-colors rounded-lg p-8 text-center cursor-pointer">
+                  <Input 
+                    id="file" 
+                    type="file" 
+                    accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" 
+                    onChange={handleFileUpload} 
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  />
+                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                    <span className="font-medium text-foreground">Click to upload or drag and drop</span>
+                    <span className="text-xs">Excel or CSV file up to 10MB</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {showMapping && (
+        <Card className="backdrop-blur-xl bg-background/60 border-primary/20 shadow-lg shadow-primary/5 relative overflow-hidden animate-in slide-in-from-bottom-4">
+          <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
+          <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 pb-6 border-b border-border/40">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-md">
+                <Settings2 className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-lg font-bold">Map Data Columns</CardTitle>
+                <CardDescription className="text-muted-foreground mt-1">
+                  We've guessed the column mappings. Please verify them before proceeding.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-8 space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold">Primary Name</Label>
                 <select 
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                  className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
                   value={mappings.nameCol}
                   onChange={e => setMappings({...mappings, nameCol: e.target.value})}
                 >
-                  <option value="">-- Select Column --</option>
+                  <option value="">-- Ignore --</option>
                   {headers.map(h => <option key={h} value={h}>{h}</option>)}
                 </select>
               </div>
-              <div className="space-y-2">
-                <Label>Primary Email Column</Label>
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold">Primary Email</Label>
                 <select 
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                  className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
                   value={mappings.emailCol}
                   onChange={e => setMappings({...mappings, emailCol: e.target.value})}
                 >
-                  <option value="">-- Select Column --</option>
+                  <option value="">-- Ignore --</option>
                   {headers.map(h => <option key={h} value={h}>{h}</option>)}
                 </select>
               </div>
-              <div className="space-y-2">
-                <Label>Primary Phone Column</Label>
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold">Primary Phone (Optional)</Label>
                 <select 
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                  className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
                   value={mappings.phoneCol}
                   onChange={e => setMappings({...mappings, phoneCol: e.target.value})}
                 >
-                  <option value="">-- Select Column --</option>
+                  <option value="">-- Ignore --</option>
                   {headers.map(h => <option key={h} value={h}>{h}</option>)}
                 </select>
               </div>
-              <div className="space-y-2">
-                <Label>Team Name Column</Label>
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold">Team Name (Optional)</Label>
                 <select 
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                  className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
                   value={mappings.teamCol}
                   onChange={e => setMappings({...mappings, teamCol: e.target.value})}
                 >
-                  <option value="">-- Select Column --</option>
+                  <option value="">-- Ignore --</option>
                   {headers.map(h => <option key={h} value={h}>{h}</option>)}
                 </select>
               </div>
             </div>
             
-            <Button onClick={processMapping} className="w-full">
-              Extract Attendees
-            </Button>
+            <div className="pt-6 border-t border-border/40">
+              <Button onClick={processMapping} className="w-full md:w-auto px-8 h-11 bg-primary hover:opacity-90">
+                Extract Attendees <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </div>
           </CardContent>
         </Card>
       )}
 
       {fileProcessed && (
-        <Card className="border-green-500/20 shadow-[0_0_30px_-5px_rgba(34,197,94,0.1)] backdrop-blur-xl bg-background/60 mt-8 animate-in slide-in-from-bottom-4">
-          <CardHeader className="bg-green-500/5 pb-4 border-b border-green-500/10">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-green-500" />
-              <CardTitle className="text-green-500 text-lg font-bold">Extraction Complete</CardTitle>
+        <Card className="backdrop-blur-xl bg-background/60 border-emerald-500/30 shadow-lg shadow-emerald-500/5 relative overflow-hidden animate-in slide-in-from-bottom-4">
+          <div className="absolute top-0 left-0 w-full h-1 bg-emerald-500" />
+          <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 pb-6 border-b border-border/40">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-500/10 rounded-md">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg font-bold">Extraction Complete</CardTitle>
+                  <CardDescription className="text-muted-foreground mt-1">
+                    Found <strong className="text-foreground">{extractedAttendees.length}</strong> valid attendees. Review before finalizing.
+                  </CardDescription>
+                </div>
+              </div>
+              <Button onClick={handleSubmit} disabled={uploading || extractedAttendees.length === 0} className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-md">
+                {uploading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Upload className="mr-2 h-4 w-4" />
+                )}
+                {uploading ? "Saving Data..." : "Confirm & Import"}
+              </Button>
             </div>
-            <CardDescription className="text-muted-foreground mt-1">
-              Successfully extracted {extractedAttendees.length} attendees. Review below before uploading.
-            </CardDescription>
           </CardHeader>
-          <CardContent className="pt-6 space-y-6">
+          <CardContent className="pt-6">
             
-            <div className="rounded-md border max-h-[400px] overflow-auto">
+            <div className="rounded-md border max-h-[500px] overflow-auto relative">
               <Table>
-                <TableHeader className="sticky top-0 bg-white shadow-sm">
-                  <TableRow>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Team</TableHead>
+                <TableHeader className="sticky top-0 bg-background/95 backdrop-blur-sm z-10 shadow-sm border-b border-border/40">
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="font-semibold text-foreground/80 pl-4">Role</TableHead>
+                    <TableHead className="font-semibold text-foreground/80">Name</TableHead>
+                    <TableHead className="font-semibold text-foreground/80">Email</TableHead>
+                    <TableHead className="font-semibold text-foreground/80">Phone</TableHead>
+                    <TableHead className="font-semibold text-foreground/80">Team</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {extractedAttendees.slice(0, 100).map((att, i) => (
-                    <TableRow key={i}>
-                      <TableCell>
+                  {extractedAttendees.slice(0, 50).map((att, i) => (
+                    <TableRow key={i} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors">
+                      <TableCell className="pl-4">
                         {att.isTeamLeader ? (
-                          <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded font-medium">Leader</span>
+                          <span className="bg-indigo-500/10 text-indigo-600 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-sm">Leader</span>
                         ) : (
-                          <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">Member</span>
+                          <span className="bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-sm">Member</span>
                         )}
                       </TableCell>
                       <TableCell className="font-medium">{att.name}</TableCell>
-                      <TableCell>{att.email}</TableCell>
-                      <TableCell>{att.phone || <span className="text-gray-400 text-xs">N/A</span>}</TableCell>
-                      <TableCell>{att.teamName || <span className="text-gray-400 text-xs">None</span>}</TableCell>
+                      <TableCell className="text-muted-foreground text-sm">{att.email}</TableCell>
+                      <TableCell className="text-muted-foreground text-sm">{att.phone || <span className="italic opacity-50">N/A</span>}</TableCell>
+                      <TableCell>
+                        {att.teamName ? (
+                          <span className="inline-block truncate max-w-[150px] text-sm">{att.teamName}</span>
+                        ) : (
+                          <span className="italic opacity-50 text-sm">None</span>
+                        )}
+                      </TableCell>
                     </TableRow>
                   ))}
-                  {extractedAttendees.length > 100 && (
+                  {extractedAttendees.length > 50 && (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center py-4 text-gray-500 bg-gray-50 text-sm">
-                        ... and {extractedAttendees.length - 100} more attendees
+                      <TableCell colSpan={5} className="text-center py-6 text-muted-foreground font-medium bg-slate-50/50 dark:bg-slate-900/50">
+                        ... and {extractedAttendees.length - 50} more attendees
                       </TableCell>
                     </TableRow>
                   )}
                   {extractedAttendees.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8 text-gray-500">
-                        No valid attendees with emails could be found.
+                      <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
+                        No valid attendees with emails could be found. Check your mapping.
                       </TableCell>
                     </TableRow>
                   )}
@@ -326,10 +379,6 @@ export default function UploadPage({ params }: { params: Promise<{ id: string }>
               </Table>
             </div>
             
-            <Button onClick={handleSubmit} disabled={uploading || extractedAttendees.length === 0} className="w-full">
-              <Upload className="mr-2 h-4 w-4" />
-              {uploading ? "Saving Attendees..." : `Confirm & Save ${extractedAttendees.length} Attendees`}
-            </Button>
           </CardContent>
         </Card>
       )}

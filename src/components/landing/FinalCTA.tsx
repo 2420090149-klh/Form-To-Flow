@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 
 export function FinalCTA() {
   return (
-    <section className="py-32 bg-background relative overflow-hidden">
+    <section className="py-12 md:py-16 relative overflow-hidden">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none z-0" />
       
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] rounded-full bg-primary/10 blur-[120px] pointer-events-none z-0" />
