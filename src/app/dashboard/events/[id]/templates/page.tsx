@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { QRCodeSVG } from "qrcode.react"
-import { Upload, FileImage, Save, ArrowLeft, Image as ImageIcon, QrCode } from "lucide-react"
+import { Upload, FileImage, Save, ArrowLeft, Image as ImageIcon, QrCode, Loader2 } from "lucide-react"
 import Link from "next/link"
 
 const TEMPLATES = [
